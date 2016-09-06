@@ -13,10 +13,10 @@ use Illuminate\Database\Capsule\Manager as Capsule;
  *
  * @return array
  */
-function iugu_MetaData()
+function iugu_cartao_MetaData()
 {
     return array(
-        'DisplayName' => 'Iugu WHMCS v1.5',
+        'DisplayName' => 'Iugu WHMCS v1.5 - Cartão',
         'APIVersion' => '1.1', // Use API Version 1.1
         'DisableLocalCredtCardInput' => true,
         'TokenisedStorage' => true,
@@ -43,14 +43,14 @@ function iugu_MetaData()
  *
  * @return array
  */
-function iugu_config()
+function iugu_cartao_config()
 {
     return array(
         // the friendly display name for a payment gateway should be
         // defined here for backwards compatibility
         'FriendlyName' => array(
             'Type' => 'System',
-            'Value' => 'Iugu WHMCS v1.5',
+            'Value' => 'Iugu WHMCS v1.5 - Cartão',
         ),
         // a text field type allows for single line text input
         'api_token' => array(
@@ -77,7 +77,7 @@ function iugu_config()
 }
 
 
-function iugu_link($params){
+function iugu_cartao_link($params){
 
 require_once("iugu/Iugu.php");
 
@@ -89,8 +89,8 @@ require_once("iugu/Iugu.php");
   $systemUrl = $params['systemurl'];
   $returnUrl = $params['returnurl'];
   $expired_url = $returnUrl;
-	$notification_url = $systemUrl . '/modules/gateways/callback/iugu.php';
-  $langPayNow = $params['langpaynow'];
+	$notification_url = $systemUrl . '/modules/gateways/callback/iugu_cartao.php';
+  $langPayNow = "Pagar com Cartão de Crédito";
   $moduleDisplayName = $params['name'];
   $moduleName = $params['paymentmethod'];
   $whmcsVersion = $params['whmcsVersion'];
@@ -116,15 +116,18 @@ require_once("iugu/Iugu.php");
 	$description = $params["description"];
 	$amount = number_format($params['amount'], 2, '', '');
 	$currencyCode = $params['currency'];
-	$dueDate = $params['dudate'];
-	if ( $dueDate < date('d/m/Y') ) {
+	$dueDate = $params['duedate'];
+  //var_dump($dueDate);
+  if ( $dueDate < date('d/m/Y') ) {
 		// se o vencimento for menor que a data atual (fatura ainda não vencida) acrescenta d+
 		$vencimento = date('d/m/Y', strtotime('+ '.$params['dias'].' days'));
 	} else {
 		// senão, vencimento recebe a date de vencimento
 		$vencimento = date('d/m/Y', strtotime($dueDate));
 	}
-
+  //var_dump($vencimento);
+  //$paymentMethod = 'bank_slip';
+  $paymentMethod = 'credit_card';
 	// Print all client first names using a simple select.
 
 	/** @var stdClass $client */
@@ -151,6 +154,7 @@ require_once("iugu/Iugu.php");
 		"return_url" => $returnUrl,
 		"expired_url" => $expired_url,
 		"notification_url" => $notification_url,
+    "payable_with" => $paymentMethod,
 		"items" => $itens,
 		"ignore_due_email" => true,
 		"custom_variables" => Array(
@@ -175,7 +179,10 @@ require_once("iugu/Iugu.php");
 	));
 
   //$htmlOutput = '<button type="button" href="'.$criar->secure_url.'">'.$langPayNow.'</button>';
-  $htmlOutput = '<a class="btn btn-success btn-lg" role="button" href="'.$criar->secure_url.'">'.$langPayNow.'</a>';
+  $htmlOutput = '<a class="btn btn-success btn-lg" role="button" href="'.$criar->secure_url.'">'.$langPayNow.'</a>
+                  <p> <small>Pagamento realizado em ambiente seguro.</small> </p>
+
+                ';
 
 	//print_r($criar);
 
@@ -183,7 +190,7 @@ require_once("iugu/Iugu.php");
 	return $htmlOutput;
  }else{
 	 echo "Erro ao gerar cobrança. Contate o suporte.";
-	 //print_r($criar);
+	 print_r($criar);
  }
 }
 

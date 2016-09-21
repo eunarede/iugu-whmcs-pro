@@ -81,8 +81,6 @@ function iugu_boleto_link($params){
 
 require_once("iugu/Iugu.php");
 
-//var_dump($params);
-
 // System Parameters
 	$apiToken = $params['api_token'];
   $companyName = $params['companyname'];
@@ -145,50 +143,98 @@ require_once("iugu/Iugu.php");
     $itens[] = $item;
   }
 
-	Iugu::setApiKey($apiToken);
-	$criar = Iugu_Invoice::create(Array(
-		"email" => $email,
-		"due_date" => $vencimento,
-		"return_url" => $returnUrl,
-		"expired_url" => $expired_url,
-		"notification_url" => $notification_url,
-		"items" => $itens,
-		"ignore_due_email" => true,
-		"custom_variables" => Array(
-			Array(
-				"name" => "invoice_id",
-				"value" => $invoiceId
-			)
-		),
-		"payer" => Array(
-			"cpf_cnpj" => $cpf_cnpj,
-			"name" => $fullname,
-			"email" => $email,
-			"address" => Array(
-				"street" => $address1,
-				"number" => $address2,
-				"city" => $city,
-				"state" => $state,
-				"country" => $country,
-				"zip_code" => $postcode
-			)
-		)
-	));
-
-  //$htmlOutput = '<button type="button" href="'.$criar->secure_url.'">'.$langPayNow.'</button>';
-  $htmlOutput = '<a class="btn btn-success btn-lg" role="button" href="'.$criar->secure_url.'">'.$langPayNow.'</a>
-                <p>Linha Digitável: <small>'.$criar->bank_slip->digitable_line.'</small></p>
-                ';
-
-	//print_r($criar);
-
- if(!empty($criar->secure_url)){
-	return $htmlOutput;
- }else{
-	 echo "Erro ao gerar cobrança. Contate o suporte.";
-	 //print_r($criar);
- }
+  // Busca na tabela mod_iugu se já existe uma fatura criada na Iugu referente a invoice do WHMCS
+  //$iuguInvoiceId = Array();
+  try{
+  // $iuguInvoiceId = Capsule::table('mod_iugu')->where('invoice_id', $invoiceId)->value('iugu_id');
+  $iuguInvoiceId = Capsule::table('mod_iugu')->where('invoice_id', $invoiceId)->pluck('iugu_id');
+}catch (\Exception $e){
+  echo "deu merda em buscar a fatura. {$e->getMessage()}";
+  var_dump($iuguInvoiceId);
 }
+// Loop through each Capsule query made during the page request.
+// foreach (Capsule::connection()->getQueryLog() as $query) {
+//     echo "Query: {$query['query']}" . PHP_EOL;
+//     echo "Execution Time: {$query['time']}ms" . PHP_EOL;
+//     echo "Parameters: " . PHP_EOL;
+//
+//     foreach ($query['bindings'] as $key => $value) {
+//         echo "{$key} => {$value}" . PHP_EOL;
+//     }
+// }
+  var_dump($iuguInvoiceId);
+
+  if (!empty($iuguInvoiceId)) {
+
+    Iugu::setApiKey($apiToken);
+    $fetchInvoice = Iugu_Invoice::fetch($iuguInvoiceId);
+    //print_r($fetchInvoice);
+
+    $htmlOutput = '<a class="btn btn-success btn-lg" role="button" href="'.$fetchInvoice->secure_url.'">'.$langPayNow.'</a>
+                  <p>Linha Digitável: <br><small>'.$fetchInvoice->bank_slip->digitable_line.'</small></p>
+                  ';
+
+
+   if(!empty($fetchInvoice->secure_url)){
+  	return $htmlOutput;
+   }else{
+  	 echo "Erro ao carregar a fatura. Contate o suporte.";
+  	 //print_r($createInvoice);
+   }
+  }
+  else{
+
+  	Iugu::setApiKey($apiToken);
+  	$createInvoice = Iugu_Invoice::create(Array(
+  		"email" => $email,
+  		"due_date" => $vencimento,
+  		"return_url" => $returnUrl,
+  		"expired_url" => $expired_url,
+  		"notification_url" => $notification_url,
+  		"items" => $itens,
+  		"ignore_due_email" => true,
+  		"custom_variables" => Array(
+  			Array(
+  				"name" => "invoice_id",
+  				"value" => $invoiceId
+  			)
+  		),
+  		"payer" => Array(
+  			"cpf_cnpj" => $cpf_cnpj,
+  			"name" => $fullname,
+  			"email" => $email,
+  			"address" => Array(
+  				"street" => $address1,
+  				"number" => $address2,
+  				"city" => $city,
+  				"state" => $state,
+  				"country" => $country,
+  				"zip_code" => $postcode
+  			)
+  		)
+  	));
+
+    // insere na tabela mod_iugu os dados de retorno referente a criação da fatura Iugu
+    $insertIuguData = Capsule::table('mod_iugu')->insert(
+                                                          [
+                                                            'invoice_id' => $invoiceId,
+                                                            'iugu_id' => $createInvoice->id,
+                                                            'secure_id' => $createInvoice->secure_id
+                                                          ]
+                                                        );
+
+    $htmlOutput = '<a class="btn btn-success btn-lg" role="button" href="'.$createInvoice->secure_url.'">'.$langPayNow.'</a>
+                  <p>Linha Digitável: <small>'.$createInvoice->bank_slip->digitable_line.'</small></p>
+                  ';
+
+
+   if(!empty($createInvoice->secure_url)){
+  	return $htmlOutput;
+   }else{
+  	 echo "Erro ao gerar cobrança. Contate o suporte.";
+    }
+ } //else
+} //function
 
 
 ?>

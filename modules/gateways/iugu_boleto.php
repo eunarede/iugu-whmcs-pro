@@ -152,6 +152,7 @@ require_once("iugu/Iugu.php");
 		"return_url" => $returnUrl,
 		"expired_url" => $expired_url,
 		"notification_url" => $notification_url,
+    "payable_with" => $paymentMethod,
 		"items" => $itens,
 		"ignore_due_email" => true,
 		"custom_variables" => Array(

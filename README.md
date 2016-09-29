@@ -11,6 +11,6 @@
 - Informe o Token da Iugu.
 - Clique em Save Changes.
 
-Baseado no [domhost/iugu-whmcs][1]
+Inspirado em [domhost/iugu-whmcs][1]
 
 [1]: https://github.com/domhost/iugu-whmcs

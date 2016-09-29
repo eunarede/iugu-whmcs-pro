@@ -149,7 +149,7 @@ require_once("iugu/Iugu.php");
   // $iuguInvoiceId = Capsule::table('mod_iugu')->where('invoice_id', $invoiceId)->value('iugu_id');
   $iuguInvoiceId = Capsule::table('mod_iugu')->where('invoice_id', $invoiceId)->pluck('iugu_id');
 }catch (\Exception $e){
-  echo "deu merda em buscar a fatura. {$e->getMessage()}";
+  echo "Problemas em localizar a sua fatura. Contate nosso suporte e informe o erro 001. {$e->getMessage()}";
   var_dump($iuguInvoiceId);
 }
 // Loop through each Capsule query made during the page request.
@@ -162,7 +162,7 @@ require_once("iugu/Iugu.php");
 //         echo "{$key} => {$value}" . PHP_EOL;
 //     }
 // }
-  var_dump($iuguInvoiceId);
+  // var_dump($iuguInvoiceId);
 
   if (!empty($iuguInvoiceId)) {
 
@@ -178,7 +178,7 @@ require_once("iugu/Iugu.php");
    if(!empty($fetchInvoice->secure_url)){
   	return $htmlOutput;
    }else{
-  	 echo "Erro ao carregar a fatura. Contate o suporte.";
+  	 echo "Erro ao carregar a fatura. Contate o suporte e informe o erro 002.";
   	 //print_r($createInvoice);
    }
   }
@@ -231,7 +231,7 @@ require_once("iugu/Iugu.php");
    if(!empty($createInvoice->secure_url)){
   	return $htmlOutput;
    }else{
-  	 echo "Erro ao gerar cobrança. Contate o suporte.";
+  	 echo "Erro ao gerar cobrança. Contate o suporte e informe o erro 003.";
     }
  } //else
 } //function

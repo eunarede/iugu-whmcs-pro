@@ -128,7 +128,6 @@ require_once("iugu/Iugu.php");
   //var_dump($vencimento);
   //$paymentMethod = 'bank_slip';
   $paymentMethod = 'credit_card';
-	// Print all client first names using a simple select.
 
 	/** @var stdClass $client */
 	$itens = Array();
@@ -147,8 +146,48 @@ require_once("iugu/Iugu.php");
     $itens[] = $item;
   }
 
+  // Busca na tabela mod_iugu se já existe uma fatura criada na Iugu referente a invoice do WHMCS
+  //$iuguInvoiceId = Array();
+  try{
+  // $iuguInvoiceId = Capsule::table('mod_iugu')->where('invoice_id', $invoiceId)->value('iugu_id');
+  $iuguInvoiceId = Capsule::table('mod_iugu')->where('invoice_id', $invoiceId)->pluck('iugu_id');
+}catch (\Exception $e){
+  echo "Problemas em localizar a sua fatura. Contate nosso suporte e informe o erro 001. {$e->getMessage()}";
+  var_dump($iuguInvoiceId);
+}
+// Loop through each Capsule query made during the page request.
+// foreach (Capsule::connection()->getQueryLog() as $query) {
+//     echo "Query: {$query['query']}" . PHP_EOL;
+//     echo "Execution Time: {$query['time']}ms" . PHP_EOL;
+//     echo "Parameters: " . PHP_EOL;
+//
+//     foreach ($query['bindings'] as $key => $value) {
+//         echo "{$key} => {$value}" . PHP_EOL;
+//     }
+// }
+  // var_dump($iuguInvoiceId);
+if (!empty($iuguInvoiceId)) {
+
+  Iugu::setApiKey($apiToken);
+  $fetchInvoice = Iugu_Invoice::fetch($iuguInvoiceId);
+  //print_r($fetchInvoice);
+
+  $htmlOutput = '<a class="btn btn-success btn-lg" role="button" href="'.$fetchInvoice->secure_url.'">'.$langPayNow.'</a>
+                <p>Linha Digitável: <br><small>'.$fetchInvoice->bank_slip->digitable_line.'</small></p>
+                ';
+
+
+ if(!empty($fetchInvoice->secure_url)){
+  return $htmlOutput;
+ }else{
+   echo "Erro ao carregar a fatura. Contate o suporte e informe o erro 002.";
+   //print_r($createInvoice);
+ }
+}
+else{
+
 	Iugu::setApiKey($apiToken);
-	$criar = Iugu_Invoice::create(Array(
+	$createInvoice = Iugu_Invoice::create(Array(
 		"email" => $email,
 		"due_date" => $vencimento,
 		"return_url" => $returnUrl,
@@ -178,21 +217,30 @@ require_once("iugu/Iugu.php");
 		)
 	));
 
-  //$htmlOutput = '<button type="button" href="'.$criar->secure_url.'">'.$langPayNow.'</button>';
-  $htmlOutput = '<a class="btn btn-success btn-lg" role="button" href="'.$criar->secure_url.'">'.$langPayNow.'</a>
+  // insere na tabela mod_iugu os dados de retorno referente a criação da fatura Iugu
+  $insertIuguData = Capsule::table('mod_iugu')->insert(
+                                                        [
+                                                          'invoice_id' => $invoiceId,
+                                                          'iugu_id' => $createInvoice->id,
+                                                          'secure_id' => $createInvoice->secure_id
+                                                        ]
+                                                      );
+
+  $htmlOutput = '<a class="btn btn-success btn-lg" role="button" href="'.$createInvoice->secure_url.'">'.$langPayNow.'</a>
                   <p> <small>Pagamento realizado em ambiente seguro.</small> </p>
 
                 ';
 
-	//print_r($criar);
+	//print_r($createInvoice);
 
- if(!empty($criar->secure_url)){
+ if(!empty($createInvoice->secure_url)){
 	return $htmlOutput;
  }else{
 	 echo "Erro ao gerar cobrança. Contate o suporte.";
-	 print_r($criar);
+	 //print_r($createInvoice);
  }
-}
+}//else
+}//function
 
 
 ?>

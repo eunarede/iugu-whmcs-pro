@@ -143,6 +143,7 @@ require_once("iugu/Iugu.php");
     $itens[] = $item;
   }
 
+
   // Busca na tabela mod_iugu se já existe uma fatura criada na Iugu referente a invoice do WHMCS
   //$iuguInvoiceId = Array();
   try{
@@ -150,7 +151,6 @@ require_once("iugu/Iugu.php");
   $iuguInvoiceId = Capsule::table('mod_iugu')->where('invoice_id', $invoiceId)->pluck('iugu_id');
 }catch (\Exception $e){
   echo "Problemas em localizar a sua fatura. Contate nosso suporte e informe o erro 001. {$e->getMessage()}";
-  var_dump($iuguInvoiceId);
 }
 // Loop through each Capsule query made during the page request.
 // foreach (Capsule::connection()->getQueryLog() as $query) {

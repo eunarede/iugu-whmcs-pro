@@ -170,7 +170,7 @@ require_once("iugu/Iugu.php");
     $fetchInvoice = Iugu_Invoice::fetch($iuguInvoiceId);
     //print_r($fetchInvoice);
 
-    $htmlOutput = '<a class="btn btn-success btn-lg" targe="_blank" role="button" href="'.$fetchInvoice->secure_url.'.pdf">'.$langPayNow.'</a>
+    $htmlOutput = '<a class="btn btn-success btn-lg" targe="_blank" role="button" href="'.$fetchInvoice->secure_url.'?bs=true">'.$langPayNow.'</a>
                   <p>Linha Digitável: <br><small>'.$fetchInvoice->bank_slip->digitable_line.'</small></p>
                   ';
 
@@ -191,6 +191,7 @@ require_once("iugu/Iugu.php");
   		"return_url" => $returnUrl,
   		"expired_url" => $expired_url,
   		"notification_url" => $notification_url,
+      "payable_with" => $paymentMethod,
   		"items" => $itens,
   		"ignore_due_email" => true,
   		"custom_variables" => Array(
@@ -223,7 +224,7 @@ require_once("iugu/Iugu.php");
                                                           ]
                                                         );
 
-    $htmlOutput = '<a class="btn btn-success btn-lg" target="_blank" role="button" href="'.$createInvoice->secure_url.'.pdf">'.$langPayNow.'</a>
+    $htmlOutput = '<a class="btn btn-success btn-lg" target="_blank" role="button" href="'.$createInvoice->secure_url.'?bs=true">'.$langPayNow.'</a>
                   <p>Linha Digitável: <small>'.$createInvoice->bank_slip->digitable_line.'</small></p>
                   ';
 

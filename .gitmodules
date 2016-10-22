@@ -1,0 +1,3 @@
+[submodule "modules/addons/iugu/iugu-php"]
+	path = modules/addons/iugu/iugu-php
+	url = git@github.com:iugu/iugu-php.git

@@ -53,6 +53,13 @@ function iugu_cartao_config()
             'Value' => 'Iugu WHMCS v1.5 - Cartão',
         ),
         // a text field type allows for single line text input
+        'account_id' => array(
+            'FriendlyName' => 'Número da Conta',
+            'Type' => 'text',
+            'Size' => '40',
+            'Default' => '',
+            'Description' => 'Número da sua conta Iugu. Não confunda com API.',
+        ),
         'api_token' => array(
             'FriendlyName' => 'Token',
             'Type' => 'text',
@@ -63,44 +70,72 @@ function iugu_cartao_config()
     );
 }
 
-// function iugu_cartao_storeremote($params){
-//   require_once("iugu/Iugu.php");
-//
-//   $accountId = $params['account_id'];
-//   $cardMonth = substr($params['cardexp'],0,-4);
-//   $cardYear = substr($params['cardexp'],2);
-//
-//   Iugu::setApiKey($apiToken);
-//   $createToken = Iugu_PaymentToken::create(Array(
-//     "account_id" => $accountId,
-//     "method" => 'credit_card',
-//     "data" => Array(
-//         "number" => $params['cardnum'],
-//         "verification_value" => $params['cccvv'],
-//         "first_name" => $params['clientdetails']['firstname'],
-//         "last_name" => $params['clientdetails']['lastname'],
-//         "month" => $cardMonth,
-//         "year" => $cardYear
-//     )
-//   ));
-//
-//
-//   if(empty($createToken->id)){
-//     return array(
-//       "status" => "success",
-//       "gatewayid" => $createToken->id,
-//       "rawdata" => $createToken,
-//     );
-//   }
-//   else{
-//     return array(
-//       "status" => "failed",
-//       "rawdata" => $createToken,
-//     );
-//   }
-//
-//
-// }
+function iugu_cartao_storeremote($params){
+  require_once("iugu/Iugu.php");
+
+  $accountId = $params['account_id'];
+
+  Iugu::setApiKey($apiToken);
+  $createToken = Iugu_PaymentToken::create(Array(
+    "account_id" => $accountId,
+    "method" => 'credit_card',
+    "data" => Array(
+        "number" => $params['cardnum'],
+        "verification_value" => $params['cccvv'],
+        "first_name" => $params['clientdetails']['firstname'],
+        "last_name" => $params['clientdetails']['lastname'],
+        "month" => $cardMonth,
+        "year" => $cardYear
+    )
+  ));
+
+  //se o token do cartão foi criado, tenta criar o metodo de pagamento do cliente
+  if(!empty($createToken->id)){
+    // Busca na tabela mod_iugu_customers o ID do cliente da Iugu
+    try{
+      $iuguCustomerId = Capsule::table('mod_iugu_customers')->where('user_id', $userid)->pluck('iugu_id');
+    }catch (\Exception $e){
+      echo "Problemas em localizar o cliente Iugu. Contate nosso suporte e informe o erro 001.";
+      echo $e->getMessage();
+    }
+
+    //cria o método de pagamento padrão para armazenar o token do cartão de credito na iugu
+    Iugu::setApiKey($apiToken);
+
+    $customer = Iugu_Customer::fetch($iuguCustomerId);
+    $payment_method = $customer->payment_methods()->create(Array(
+    "description" => "Primeiro Cartão",
+    "item_type" => "credit_card",
+    "token" => $createToken->id
+    ));
+    //se o id do metodo de pagamento foi criado com sucesso, retorna sucesso ao _storeremote
+    if(!empty($payment_method->id)){
+      return array(
+        "status" => "success",
+        "gatewayid" => $payment_method->id,
+        "rawdata" => $payment_method,
+      );
+    }
+    //senão retorna falha ao _storeremote
+    else{
+      return array(
+        "status" => "failed",
+        "rawdata" => $createToken,
+      );
+    }
+
+  }
+  // se o token nao foi criado com sucesso, não tenta criar o metodo de pagamento
+  // e retorna falha ao _storeremote
+  else{
+    return array(
+      "status" => "failed",
+      "rawdata" => $createToken,
+    );
+  }
+
+
+}
 
 
 function iugu_cartao_capture($params){
@@ -112,10 +147,6 @@ require_once("iugu/Iugu.php");
 // System Parameters
 	$apiToken = $params['api_token'];
   $companyName = $params['companyname'];
-  $systemUrl = $params['systemurl'];
-  $returnUrl = $params['returnurl'];
-  $expired_url = $returnUrl;
-	$notification_url = $systemUrl . '/modules/gateways/callback/iugu_cartao.php';
   $langPayNow = "Pagar com Cartão de Crédito";
   $moduleDisplayName = $params['name'];
   $moduleName = $params['paymentmethod'];
@@ -134,6 +165,7 @@ require_once("iugu/Iugu.php");
   $country = $params['clientdetails']['country'];
   $phone = $params['clientdetails']['phonenumber'];
   $cpf_cnpj = $params['clientdetails']['customfields1'];
+  $userid = $params['userid'];
   //var_dump($cpf_cnpj);
 
 
@@ -143,17 +175,7 @@ require_once("iugu/Iugu.php");
 	$amount = number_format($params['amount'], 2, '', '');
 	$currencyCode = $params['currency'];
 	$dueDate = $params['duedate'];
-  //var_dump($dueDate);
-  if ( $dueDate < date('d/m/Y') ) {
-		// se o vencimento for menor que a data atual (fatura ainda não vencida) acrescenta d+
-		$vencimento = date('d/m/Y', strtotime('+ '.$params['dias'].' days'));
-	} else {
-		// senão, vencimento recebe a date de vencimento
-		$vencimento = date('d/m/Y', strtotime($dueDate));
-	}
-  //var_dump($vencimento);
-  //$paymentMethod = 'bank_slip';
-  $paymentMethod = 'credit_card';
+  $tokenisedPaymentId = $params['gatewayid'];
 
 	/** @var stdClass $client */
 	$itens = Array();
@@ -172,25 +194,17 @@ require_once("iugu/Iugu.php");
     $itens[] = $item;
   }
 
-  $cardMonth = substr($params['cardexp'],0,-4);
-  $cardYear = substr($params['cardexp'],2);
-
-  Iugu::setApiKey($apiToken);
-  $createToken = Iugu_PaymentToken::create(Array(
-    "account_id" => $accountId,
-    "method" => 'credit_card',
-    "data" => Array(
-        "number" => $params['cardnum'],
-        "verification_value" => $params['cccvv'],
-        "first_name" => $params['clientdetails']['firstname'],
-        "last_name" => $params['clientdetails']['lastname'],
-        "month" => $cardMonth,
-        "year" => $cardYear
-    )
-  ));
+  // Busca na tabela mod_iugu_customers o ID do cliente da Iugu
+  try{
+    $iuguCustomerId = Capsule::table('mod_iugu_customers')->where('user_id', $userid)->pluck('iugu_id');
+  }catch (\Exception $e){
+    echo "Problemas em localizar a sua fatura. Contate nosso suporte e informe o erro 001. {$e->getMessage()}";
+  }
 
 	Iugu::setApiKey($apiToken);
 	$chargeInvoice = Iugu_Charge::create(Array(
+    "customer_payment_method_id" => $tokenisedPaymentId,
+    "customer_id" => $iuguCustomerId,
 		"items" => $itens,
 		"payer" => Array(
 			"cpf_cnpj" => $cpf_cnpj,
@@ -210,7 +224,7 @@ require_once("iugu/Iugu.php");
  if($chargeInvoice->success){
    return array(
      "status" => "success",
-     "transid" => $results["transid"],
+     "transid" => $chargeInvoice->invoice_id,
      "rawdata" => $chargeInvoice,
  );
  }else{

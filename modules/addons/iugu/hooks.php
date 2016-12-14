@@ -17,7 +17,11 @@ use Illuminate\Database\Capsule\Manager as Capsule;
 // Gatilho para criação do cliente na Iugu para cobranças futuras
 
 function hook_create_client($vars){
-  require_once("iugu-php/lib/Iugu.php");
+	if (!$currentPage == '/cart.php?a=checkout&amp;'){
+		require_once("iugu-php/lib/Iugu.php");
+	}
+
+	// problemas com os includes deste gatilho com outro include do iugu. <-----
 
   // $apiToken = $vars['iugu_api_token'];
   $table = "tbladdonmodules";
@@ -27,7 +31,7 @@ function hook_create_client($vars){
 	$data = mysql_fetch_array($result);
 
   $apiToken = $data["value"];
-  $userid = $vars['userid'];
+  $userId = $vars['userid'];
   $email = $vars['email'];
   $name = $vars['firstname'];
 
@@ -37,7 +41,12 @@ function hook_create_client($vars){
     $createUser = Iugu_Customer::create(Array(
       "email" => $email,
       "name" => $name,
-      "notes" => "Cliente adicionado pelo WHMCS - $userid"
+      "notes" => "Cliente adicionado pelo WHMCS",
+			"custom_variables" => Array(
+  			Array(
+  				"name" => "whmcs_user_id",
+  				"value" => $userId
+  			))
     ));
 
   }catch (\Exception $e){
@@ -51,7 +60,7 @@ function hook_create_client($vars){
   try{
     Capsule::table('mod_iugu_customers')->insert(
                                       [
-                                        'user_id' => $userid,
+                                        'user_id' => $userId,
                                         'iugu_id' => $createUser->id
                                       ]
                                     );
@@ -62,6 +71,6 @@ function hook_create_client($vars){
 
 
 }
-add_hook('ClientAdd', 1, 'hook_create_client');
+ //add_hook('ClientAdd', 1, 'hook_create_client');
 
  ?>

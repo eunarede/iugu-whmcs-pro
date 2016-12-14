@@ -5,6 +5,8 @@
 if (!defined("WHMCS"))
     die("Esse arquivo não pode ser acessado diretamente.");
 
+use Illuminate\Database\Capsule\Manager as Capsule;
+
 function iugu_config() {
     $configarray = array(
 		"name" => "Iugu",
@@ -53,6 +55,76 @@ function iugu_activate() {
     return array('status'=>'error','description'=>'Erro ao instalar addon.');
 
 }
+
+function iugu_output($vars){
+  
+  require_once("iugu-php/lib/Iugu.php");
+
+  $iuguAccNumber = $vars['iugu_account_number'];
+  $iuguApiToken = $vars['iugu_api_token'];
+
+  // Busca na tabela mod_iugu se já existe uma fatura criada na Iugu referente a invoice do WHMCS
+  //$iuguInvoiceId = Array();
+  try{
+  // $iuguInvoiceId = Capsule::table('mod_iugu')->where('invoice_id', $invoiceId)->value('iugu_id');
+  $tableUsers = Capsule::table('mod_iugu_customers')->select('user_id', 'iugu_id')->get();
+}catch (\Exception $e){
+  echo "Problemas em localizar a sua fatura. Contate nosso suporte e informe o erro 001. {$e->getMessage()}";
+}
+echo "<div class='tablebg'>";
+echo '<h2>Usuários com Cadastro na Iugu</h2><p>Usuários do WHMCS com cadastro associado na Iugu. Dados do Banco</p>';
+echo "<table id='sortabletbl0' class='datatable' width='100%' border='0' cellspacing='1' cellpadding='3'>";
+echo '<thead>';
+echo '<tr>';
+echo '<th>User</th>';
+echo '<th>Iugu User</th>';
+echo '</tr>';
+echo '</thead><tbody>';
+echo '<tbody>';
+foreach ($tableUsers as $key => $value) {
+  echo '<tr><td>';
+  print_r($value->user_id);
+  echo '</td><td>';
+  print_r($value->iugu_id);
+  echo '</td></tr>';
+}
+echo '</tbody></table></div>';
+
+try{
+
+  Iugu::setApiKey($iuguApiToken);
+  $customers = Iugu_Customer::search()->results();
+  // var_dump($customers);
+  echo "<div class='tablebg'>";
+  echo '<h2>Usuários Iugu</h2><p>Usuários cadastrados na Iugu. Dados da API</p>';
+  echo "<table id='sortabletbl0' class='datatable' width='100%' border='0' cellspacing='1' cellpadding='3'>";
+  echo '<thead>';
+  echo '<tr>';
+  echo '<th>Nome</th>';
+  echo '<th>Email</th>';
+  echo '<th>ID</th>';
+  echo '</tr>';
+  echo '</thead><tbody>';
+  echo '<tbody>';
+  foreach ($customers as $key => $value) {
+    echo '<tr><td>';
+    print_r($value->name);
+    echo '</td><td>';
+    print_r($value->email);
+    echo '</td><td>';
+    print_r($value->id);
+    echo '</td></tr>';
+  }
+  echo '</tbody></table></div>';
+
+}catch (\Exception $e){
+
+  echo "Problemas em localizar a sua fatura. Contate nosso suporte e informe o erro 001. {$e->getMessage()}";
+}
+
+}
+
+
 
 function iugu_deactivate() {
 

@@ -135,30 +135,30 @@ if (!$iuguUserId) {
   );
 
   $responseToken = curlCall($urlToken, $postfieldsToken);
-  $iuguCreditCardToken = json_decode($responseToken);
+  $iuguCreditCardToken = json_decode($responseToken, true);
 
-  logModuleCall("Iugu Cartao","Criar Token",$postfieldsToken,$responseToken);
+  logModuleCall("Iugu Cartao","Criar Token",$postfieldsToken,$iuguCreditCardToken);
 
     //cria o método de pagamento padrão para armazenar o token do cartão de credito na iugu
     $urlMethod = "https://api.iugu.com/v1/customers/{$iuguUserId}/payment_methods";
     $postfieldsMethod = array(
       "api_token" => $apiToken,
       "description" => 'Cartão Inserido via WHMCS',
-      "token" => $iuguCreditCardToken->id,
+      "token" => $iuguCreditCardToken['id'],
       "set_as_default" => "true",
     );
 
     $payment_method = curlCall($urlMethod, $postfieldsMethod);
 
-    $paymentMethodToken = json_decode($payment_method);
+    $paymentMethodToken = json_decode($payment_method, true);
 
     logModuleCall("Iugu Cartao","Criar Metodo de Pgto",$payment_method,$paymentMethodToken);
 
     //se o id do metodo de pagamento foi criado com sucesso, retorna sucesso ao _storeremote
-    if($paymentMethodToken->id){
+    if($paymentMethodToken['id']){
       return array(
         "status" => "success",
-        "gatewayid" => $paymentMethodToken->id,
+        "gatewayid" => $paymentMethodToken['id'],
         "rawdata" => $paymentMethodToken,
       );
     }
@@ -203,6 +203,7 @@ function iugu_cartao_capture($params){
 	$itens = Array();
 	try {
     $selectInvoiceItens = Capsule::table('tblinvoiceitems')->select('amount', 'description')->where('invoiceid', $invoiceId)->get();
+    logModuleCall("Iugu Cartao","Buscar Itens da Fatura","Itens",$selectInvoiceItens);
 			}catch (\Exception $e) {
     		echo "Não foi possível gerar os itens da fatura. Erro 002 {$e->getMessage()}";
 				}
@@ -219,31 +220,33 @@ function iugu_cartao_capture($params){
   // Busca na tabela mod_iugu_customers o ID do cliente da Iugu
   try{
     $iuguCustomerId = Capsule::table('mod_iugu_customers')->where('user_id', $userid)->value('iugu_id');
+    logModuleCall("Iugu Cartao","Buscar Cliente para Captura","Cliente",$iuguCustomerId);
   }catch (\Exception $e){
     echo "Problemas em localizar o cliente no banco de dados local. {$e->getMessage()}";
   }
 
 	Iugu::setApiKey($apiToken);
 	$chargeInvoice = Iugu_Charge::create(Array(
-    "customer_id" => $iuguCustomerId,
     "customer_payment_method_id" => $tokenisedPaymentId,
-    // "email" => $email,
+    "customer_id" => $iuguCustomerId,
+     "email" => $email,
 		"items" => $itens
 	));
 
  if($chargeInvoice->success){
+   logModuleCall("Iugu Cartao","Captura da Fatura","Sucesso",$chargeInvoice);
    return array(
      "status" => "success",
      "transid" => $chargeInvoice->invoice_id,
      "rawdata" => $chargeInvoice,
  );
-  logModuleCall("Iugu Cartao","Cobrar Fatura","Fatura Cobrada com Sucesso",$chargeInvoice);
- }else{
+ }
+ else {
+   logModuleCall("Iugu Cartao","Captura da Fatura","Falhou",$chargeInvoice);
    return array(
     "status" => "declined",
     "rawdata" => $chargeInvoice,
 );
-  logModuleCall("Iugu Cartao","Cobrar Fatura","Cobrança Falhou",$chargeInvoice);
  }
 
 } # iugu_cartao_capture

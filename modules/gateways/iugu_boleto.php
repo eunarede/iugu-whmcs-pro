@@ -16,7 +16,7 @@ use Illuminate\Database\Capsule\Manager as Capsule;
 function iugu_boleto_MetaData()
 {
     return array(
-        'DisplayName' => 'Iugu WHMCS v1.5 - Boleto',
+        'DisplayName' => 'Iugu WHMCS Pro - Boleto',
         'APIVersion' => '1.1', // Use API Version 1.1
         'DisableLocalCredtCardInput' => true,
         'TokenisedStorage' => true,
@@ -65,15 +65,26 @@ function iugu_boleto_config()
             'FriendlyName' => 'Dias Adicionais',
 						'Type' => 'dropdown',
             'Options' => array(
-                '1' => '1 Dia',
-                '2' => '2 Dias',
-                '3' => '3 Dias',
-                '4' => '4 Dias',
-                '5' => '5 Dias',
+                '1' => '1 dia',
+                '2' => '2 dias',
+                '3' => '3 dias',
+                '4' => '4 dias',
+                '5' => '5 dias',
             ),
             'Description' => 'Quantos dias serão acrescidos após o boleto estar vencido?',
         ),
     );
+}
+
+function search_client($userid) {
+  try{
+    $iuguUserId = Capsule::table('mod_iugu_customers')->where('user_id', $userid)->value('iugu_id');
+    logModuleCall("Iugu Boleto","Buscar Cliente",$userid,$iuguUserId);
+    return $iuguUserId;
+  }catch (\Exception $e){
+    //logModuleCall("Iugu Cartao","Buscar Cliente",$userid,$iuguUserId);
+    echo "Problemas em localizar o cliente no banco de dados local. Erro 001. {$e->getMessage()}";
+  }
 }
 
 
@@ -143,6 +154,8 @@ require_once("iugu/Iugu.php");
     $itens[] = $item;
   }
 
+  
+
 
   // Busca na tabela mod_iugu se já existe uma fatura criada na Iugu referente a invoice do WHMCS
   //$iuguInvoiceId = Array();
@@ -152,17 +165,7 @@ require_once("iugu/Iugu.php");
 }catch (\Exception $e){
   echo "Problemas em localizar a sua fatura. Contate nosso suporte e informe o erro 001. {$e->getMessage()}";
 }
-// Loop through each Capsule query made during the page request.
-// foreach (Capsule::connection()->getQueryLog() as $query) {
-//     echo "Query: {$query['query']}" . PHP_EOL;
-//     echo "Execution Time: {$query['time']}ms" . PHP_EOL;
-//     echo "Parameters: " . PHP_EOL;
-//
-//     foreach ($query['bindings'] as $key => $value) {
-//         echo "{$key} => {$value}" . PHP_EOL;
-//     }
-// }
-  // var_dump($iuguInvoiceId);
+
 
   if (!empty($iuguInvoiceId)) {
 

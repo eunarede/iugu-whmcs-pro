@@ -17,7 +17,7 @@ require_once("iugu/Iugu.php");
 function iugu_cartao_MetaData()
 {
     return array(
-        'DisplayName' => 'Iugu WHMCS v1.5 - Cartão',
+        'DisplayName' => 'Iugu WHMCS Pro - Cartão',
         'APIVersion' => '1.1', // Use API Version 1.1
         'DisableLocalCredtCardInput' => true,
         'TokenisedStorage' => true,
@@ -51,10 +51,10 @@ function iugu_cartao_config()
         // defined here for backwards compatibility
         'FriendlyName' => array(
             'Type' => 'System',
-            'Value' => 'Iugu WHMCS v1.5 - Cartão',
+            'Value' => 'Iugu WHMCS Pro - Cartão',
         ),
         // a text field type allows for single line text input
-        'account_id' => array(
+        'iugu_account_id' => array(
             'FriendlyName' => 'Número da Conta',
             'Type' => 'text',
             'Size' => '40',
@@ -75,8 +75,7 @@ function iugu_cartao_config()
 function iugu_cartao_storeremote($params){
 
   $apiToken = $params['api_token'];
-  // $accountId = $params['account_id'];
-  $accountId = "9953AA0CEF4F4CBCA63B4568056ED9AB";
+  $accountId = $params['iugu_account_id'];
   // parametro com o ID da conta WHMCS
   $userid = $params['clientdetails']['userid'];
   // Dados do cliente recebidos como sugerido pela equipe do WHMCS
@@ -149,12 +148,11 @@ if (!$iuguUserId) {
     );
 
     $payment_method = curlCall($urlMethod, $postfieldsMethod);
-
     $paymentMethodToken = json_decode($payment_method, true);
 
     logModuleCall("Iugu Cartao","Criar Metodo de Pgto",$payment_method,$paymentMethodToken);
 
-    //se o id do metodo de pagamento foi criado com sucesso, retorna sucesso ao _storeremote
+    //se o metodo de pagamento foi criado com sucesso, retorna sucesso ao _storeremote
     if($paymentMethodToken['id']){
       return array(
         "status" => "success",

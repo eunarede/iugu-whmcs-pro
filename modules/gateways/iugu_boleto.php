@@ -3,6 +3,7 @@ if (!defined("WHMCS")) {
     die("This file cannot be accessed directly");
 }
 use Illuminate\Database\Capsule\Manager as Capsule;
+require_once("iugu/Iugu.php");
 /**
  * Define module related meta data.
  *
@@ -43,16 +44,14 @@ function iugu_boleto_MetaData()
  *
  * @return array
  */
-function iugu_boleto_config()
-{
+function iugu_boleto_config(){
     return array(
-        // the friendly display name for a payment gateway should be
-        // defined here for backwards compatibility
+        // nome amigável do módulo
         'FriendlyName' => array(
             'Type' => 'System',
             'Value' => 'Iugu WHMCS v1.5 - Boleto',
         ),
-        // a text field type allows for single line text input
+        // token da API da Iugu
         'api_token' => array(
             'FriendlyName' => 'Token',
             'Type' => 'text',
@@ -60,7 +59,7 @@ function iugu_boleto_config()
             'Default' => '',
             'Description' => 'Acesse sua conta Iugu para gerar seu token.',
         ),
-        // a password field type allows for masked text input
+        // dias adicionais para vencimento do boleto
         'dias' => array(
             'FriendlyName' => 'Dias Adicionais',
 						'Type' => 'dropdown',
@@ -76,10 +75,40 @@ function iugu_boleto_config()
     );
 }
 
-function search_client($userid) {
+// Cadastra o cliente na Iugu
+function add_client( $params ){
   try{
-    $iuguUserId = Capsule::table('mod_iugu_customers')->where('user_id', $userid)->value('iugu_id');
-    logModuleCall("Iugu Boleto","Buscar Cliente",$userid,$iuguUserId);
+    Iugu::setApiKey($params['api_token']);
+    $iuguCustomer = Iugu_Customer::create(Array(
+      "email" => $params['clientdetails']['email'],
+      "name" => $params['clientdetails']['fullname'],
+      "notes" => "Cliente cadastrado através do WHMCS",
+      "custom_variables" => Array(
+        Array(
+          "name" => "whmcs_user_id",
+          "value" => $params['clientdetails']['userid']
+        ))
+    ));
+    // Insere na tabela mod_iugu_customers o Código do cliente Iugu
+    Capsule::table('mod_iugu_customers')->insert(
+                                      [
+                                        'user_id' => $params['clientdetails']['userid'],
+                                        'iugu_id' => $iuguCustomer->id
+                                      ]
+                                    );
+    logModuleCall("Iugu Boleto", "Criar Cliente", $params['clientdetails']['userid'], $iuguCustomer);
+
+    return $iuguCustomer->id;
+  }catch (\Exception $e){
+    //logModuleCall("Iugu Cartao","Buscar Cliente",$userid,$iuguUserId);
+    echo "Problemas em cadastrar o cliente na Iugu. {$e->getMessage()}";
+  }
+}
+// Busca na tabela mod_iugu_customers se já existe o cliente cadastrado
+function search_client( $user ) {
+  try{
+    $iuguUserId = Capsule::table('mod_iugu_customers')->where('user_id', $user)->value('iugu_id');
+    logModuleCall("Iugu Boleto","Buscar Cliente",$user,$iuguUserId);
     return $iuguUserId;
   }catch (\Exception $e){
     //logModuleCall("Iugu Cartao","Buscar Cliente",$userid,$iuguUserId);
@@ -87,10 +116,21 @@ function search_client($userid) {
   }
 }
 
+// Busca na tabela mod_iugu se já existe uma fatura criada na Iugu referente a invoice do WHMCS
+function search_invoice( $invoice ) {
+  //$iuguInvoiceId = Array();
+  try{
+    // $iuguInvoiceId = Capsule::table('mod_iugu')->where('invoice_id', $invoiceid)->value('iugu_id');
+    $iuguInvoiceId = Capsule::table('mod_iugu')->where('invoice_id', $invoice)->value('iugu_id');
+    logModuleCall("Iugu Boleto","Buscar Cliente",$invoice,$iuguInvoiceId);
+    return $iuguInvoiceId;
+  }catch (\Exception $e){
+    echo "Problemas em localizar a fatura no banco local. {$e->getMessage()}";
+  }
+}
 
-function iugu_boleto_link($params){
 
-require_once("iugu/Iugu.php");
+function iugu_boleto_link( $params ){
 
 // System Parameters
 	$apiToken = $params['api_token'];
@@ -105,6 +145,7 @@ require_once("iugu/Iugu.php");
   $whmcsVersion = $params['whmcsVersion'];
 
 // Client Parameters
+  $userid = $params['clientdetails']['userid'];
   $fullname = $params['clientdetails']['fullname'];
   $firstname = $params['clientdetails']['firstname'];
   $lastname = $params['clientdetails']['lastname'];
@@ -121,26 +162,26 @@ require_once("iugu/Iugu.php");
 
 
 	// Invoice Parameters
-	$invoiceId = $params['invoiceid'];
+	$invoiceid = $params['invoiceid'];
 	$description = $params["description"];
 	$amount = number_format($params['amount'], 2, '', '');
 	$currencyCode = $params['currency'];
-	$dueDate = $params['dudate'];
-	if ( $dueDate < date('d/m/Y') ) {
-		// se o vencimento for menor que a data atual (fatura ainda não vencida) acrescenta d+
-		$vencimento = date('d/m/Y', strtotime('+ '.$params['dias'].' days'));
-	} else {
-		// senão, vencimento recebe a date de vencimento
-		$vencimento = date('d/m/Y', strtotime($dueDate));
-	}
-  $paymentMethod = 'bank_slip';
+  // solicitação a API interna do WHMCS para busca de detalhes da fatura, principalmente sua data de vencimento
+  $command = "getinvoice";
+  $adminuser = "admin";
+  $values["invoiceid"] = $invoiceid;
+  $results = localAPI($command,$values,$adminuser);
+  //  print_r($results);
+  $dueDate = date('d/m/Y', strtotime($results['duedate']));
+  // echo "<br>";
+  // echo "data de vencimento";
+  // print_r(date('d/m/Y', strtotime($results['duedate'])));
+  // echo "<br>";
 
-	// Print all client first names using a simple select.
-
-	/** @var stdClass $client */
+	/** @var stdClass $itens */
 	$itens = Array();
 	try {
-    $selectInvoiceItens = Capsule::table('tblinvoiceitems')->select('amount', 'description')->where('invoiceid', $invoiceId)->get();
+    $selectInvoiceItens = Capsule::table('tblinvoiceitems')->select('amount', 'description')->where('invoiceid', $invoiceid)->get();
 			}catch (\Exception $e) {
     		echo "Não foi possível gerar a URL. {$e->getMessage()}";
 				}
@@ -154,53 +195,31 @@ require_once("iugu/Iugu.php");
     $itens[] = $item;
   }
 
-  
-
-
-  // Busca na tabela mod_iugu se já existe uma fatura criada na Iugu referente a invoice do WHMCS
-  //$iuguInvoiceId = Array();
-  try{
-  // $iuguInvoiceId = Capsule::table('mod_iugu')->where('invoice_id', $invoiceId)->value('iugu_id');
-  $iuguInvoiceId = Capsule::table('mod_iugu')->where('invoice_id', $invoiceId)->pluck('iugu_id');
-}catch (\Exception $e){
-  echo "Problemas em localizar a sua fatura. Contate nosso suporte e informe o erro 001. {$e->getMessage()}";
-}
-
-
-  if (!empty($iuguInvoiceId)) {
-
-    Iugu::setApiKey($apiToken);
-    $fetchInvoice = Iugu_Invoice::fetch($iuguInvoiceId);
-    //print_r($fetchInvoice);
-
-    $htmlOutput = '<a class="btn btn-success btn-lg" targe="_blank" role="button" href="'.$fetchInvoice->secure_url.'?bs=true">'.$langPayNow.'</a>
-                  <p>Linha Digitável: <br><small>'.$fetchInvoice->bank_slip->digitable_line.'</small></p>
-                  ';
-
-
-   if(!empty($fetchInvoice->secure_url)){
-  	return $htmlOutput;
-   }else{
-  	 echo "Erro ao carregar a fatura. Contate o suporte e informe o erro 002.";
-  	 //print_r($createInvoice);
-   }
+  // busca o usuario no banco local
+  $iuguClientId = search_client( $userid );
+  // busca informações da fatura no banco local para comparação e verificação
+  $iuguInvoiceId = search_invoice( $invoiceid );
+  // se não retornar o usuário, presume-se que ele não existe. Então vamos cadastra-lo.
+  if(!$iuguClientId){
+    $iuguClientId = add_client( $params );
   }
-  else{
-
-  	Iugu::setApiKey($apiToken);
+  // se não retornar uma fatura com o ID procurado, presume-se que é nova. Então cadastra.
+  if(!$iuguInvoiceId){
+    Iugu::setApiKey($apiToken);
   	$createInvoice = Iugu_Invoice::create(Array(
   		"email" => $email,
-  		"due_date" => $vencimento,
+  		"due_date" => $dueDate,
   		"return_url" => $returnUrl,
   		"expired_url" => $expired_url,
   		"notification_url" => $notification_url,
-      "payable_with" => $paymentMethod,
+      "customer_id" => $iuguClientId,
+      "payable_with" => 'bank_slip',
   		"items" => $itens,
-  		"ignore_due_email" => true,
+  		"ignore_due_email" => false,
   		"custom_variables" => Array(
   			Array(
   				"name" => "invoice_id",
-  				"value" => $invoiceId
+  				"value" => $invoiceid
   			)
   		),
   		"payer" => Array(
@@ -217,27 +236,35 @@ require_once("iugu/Iugu.php");
   			)
   		)
   	));
+    print_r($createInvoice);
 
     // insere na tabela mod_iugu os dados de retorno referente a criação da fatura Iugu
-    $insertIuguData = Capsule::table('mod_iugu')->insert(
+    Capsule::table('mod_iugu')->insert(
                                                           [
-                                                            'invoice_id' => $invoiceId,
+                                                            'invoice_id' => $invoiceid,
                                                             'iugu_id' => $createInvoice->id,
                                                             'secure_id' => $createInvoice->secure_id
                                                           ]
                                                         );
 
-    $htmlOutput = '<a class="btn btn-success btn-lg" target="_blank" role="button" href="'.$createInvoice->secure_url.'?bs=true">'.$langPayNow.'</a>
-                  <p>Linha Digitável: <small>'.$createInvoice->bank_slip->digitable_line.'</small></p>
+  $htmlOutput = '<a class="btn btn-success btn-lg" targe="_blank" role="button" href="'.$createInvoice->secure_url.'?bs=true">'.$langPayNow.'</a>
+                <p>Linha Digitável: <br><small>'.$createInvoice->bank_slip->digitable_line.'</small></p>
+                ';
+  return $htmlOutput;
+}else {
+
+    Iugu::setApiKey($apiToken);
+    $fetchInvoice = Iugu_Invoice::fetch($iuguInvoiceId);
+    //print_r($fetchInvoice);
+
+    $htmlOutput = '<a class="btn btn-success btn-lg" targe="_blank" role="button" href="'.$fetchInvoice->secure_url.'?bs=true">'.$langPayNow.'</a>
+                  <p>Linha Digitável: <br><small>'.$fetchInvoice->bank_slip->digitable_line.'</small></p>
                   ';
 
+    return $htmlOutput;
 
-   if(!empty($createInvoice->secure_url)){
-  	return $htmlOutput;
-   }else{
-  	 echo "Erro ao gerar cobrança. Contate o suporte e informe o erro 003.";
-    }
- } //else
+  }
+
 } //function
 
 

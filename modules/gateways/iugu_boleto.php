@@ -236,7 +236,7 @@ function iugu_boleto_link( $params ){
   			)
   		)
   	));
-    print_r($createInvoice);
+    // print_r($createInvoice);
 
     // insere na tabela mod_iugu os dados de retorno referente a criação da fatura Iugu
     Capsule::table('mod_iugu')->insert(

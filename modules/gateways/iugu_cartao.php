@@ -14,8 +14,7 @@ require_once("iugu/Iugu.php");
  *
  * @return array
  */
-function iugu_cartao_MetaData()
-{
+function iugu_cartao_MetaData(){
     return array(
         'DisplayName' => 'Iugu WHMCS Pro - Cartão',
         'APIVersion' => '1.1', // Use API Version 1.1
@@ -44,8 +43,7 @@ function iugu_cartao_MetaData()
  *
  * @return array
  */
-function iugu_cartao_config()
-{
+function iugu_cartao_config(){
     return array(
         // the friendly display name for a payment gateway should be
         // defined here for backwards compatibility

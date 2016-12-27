@@ -72,6 +72,20 @@ function iugu_boleto_config(){
             ),
             'Description' => 'Quantos dias serão acrescidos após o boleto estar vencido?',
         ),
+        'cpf_cnpj_field' => array(
+            'FriendlyName' => 'Campo CPF/CNPJ',
+            'Type' => 'text',
+            'Size' => '20',
+            'Default' => '',
+            'Description' => 'Insira o nome referente ao campo CPF/CNPJ',
+        ),
+        'api_username' => array(
+            'FriendlyName' => 'Usuário API',
+            'Type' => 'text',
+            'Size' => '20',
+            'Default' => '',
+            'Description' => 'Insira o nome de usuário com acesso a API do WHMCS',
+        ),
     );
 }
 
@@ -122,7 +136,7 @@ function search_invoice( $invoice ) {
   try{
     // $iuguInvoiceId = Capsule::table('mod_iugu')->where('invoice_id', $invoiceid)->value('iugu_id');
     $iuguInvoiceId = Capsule::table('mod_iugu')->where('invoice_id', $invoice)->value('iugu_id');
-    logModuleCall("Iugu Boleto","Buscar Cliente",$invoice,$iuguInvoiceId);
+    logModuleCall("Iugu Boleto","Buscar Fatura",$invoice,$iuguInvoiceId);
     return $iuguInvoiceId;
   }catch (\Exception $e){
     echo "Problemas em localizar a fatura no banco local. {$e->getMessage()}";
@@ -134,6 +148,7 @@ function iugu_boleto_link( $params ){
 
 // System Parameters
 	$apiToken = $params['api_token'];
+  $apiUserName = $params['api_username'];
   $companyName = $params['companyname'];
   $systemUrl = $params['systemurl'];
   $returnUrl = $params['returnurl'];
@@ -157,7 +172,8 @@ function iugu_boleto_link( $params ){
   $postcode = $params['clientdetails']['postcode'];
   $country = $params['clientdetails']['country'];
   $phone = $params['clientdetails']['phonenumber'];
-  $cpf_cnpj = $params['clientdetails']['customfields1'];
+  $cpf_cnpj_field = $params['cpf_cnpj_field'];
+  $cpf_cnpj = $params['clientdetails']["$cpf_cnpj_field"];
   //var_dump($cpf_cnpj);
 
 
@@ -168,7 +184,7 @@ function iugu_boleto_link( $params ){
 	$currencyCode = $params['currency'];
   // solicitação a API interna do WHMCS para busca de detalhes da fatura, principalmente sua data de vencimento
   $command = "getinvoice";
-  $adminuser = "admin";
+  $adminuser = $apiUserName;
   $values["invoiceid"] = $invoiceid;
   $results = localAPI($command,$values,$adminuser);
   //  print_r($results);
@@ -183,7 +199,7 @@ function iugu_boleto_link( $params ){
 	try {
     $selectInvoiceItens = Capsule::table('tblinvoiceitems')->select('amount', 'description')->where('invoiceid', $invoiceid)->get();
 			}catch (\Exception $e) {
-    		echo "Não foi possível gerar a URL. {$e->getMessage()}";
+    		echo "Não foi possível gerar os itens da fatura. {$e->getMessage()}";
 				}
 
   foreach ($selectInvoiceItens as $key => $value) {
@@ -237,7 +253,7 @@ function iugu_boleto_link( $params ){
   		)
   	));
     // print_r($createInvoice);
-
+    logModuleCall("Iugu Boleto","Gerar Fatura",$invoiceid,json_decode($createInvoice, true));
     // insere na tabela mod_iugu os dados de retorno referente a criação da fatura Iugu
     Capsule::table('mod_iugu')->insert(
                                                           [
@@ -256,6 +272,7 @@ function iugu_boleto_link( $params ){
     Iugu::setApiKey($apiToken);
     $fetchInvoice = Iugu_Invoice::fetch($iuguInvoiceId);
     //print_r($fetchInvoice);
+    logModuleCall("Iugu Boleto","Buscar Fatura Iugu",$invoiceid,$fetchInvoice);
 
     $htmlOutput = '<a class="btn btn-success btn-lg" targe="_blank" role="button" href="'.$fetchInvoice->secure_url.'?bs=true">'.$langPayNow.'</a>
                   <p>Linha Digitável: <br><small>'.$fetchInvoice->bank_slip->digitable_line.'</small></p>

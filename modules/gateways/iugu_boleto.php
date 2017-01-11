@@ -263,8 +263,9 @@ function iugu_boleto_link( $params ){
                                                           ]
                                                         );
 
-  $htmlOutput = '<a class="btn btn-success btn-lg" targe="_blank" role="button" href="'.$createInvoice->secure_url.'?bs=true">'.$langPayNow.'</a>
+  $htmlOutput = '<a class="btn btn-success btn-lg" target="_blank" role="button" href="'.$createInvoice->secure_url.'?bs=true">'.$langPayNow.'</a>
                 <p>Linha Digitável: <br><small>'.$createInvoice->bank_slip->digitable_line.'</small></p>
+                <p><img class="img-responsive" src="'.$createInvoice->bank_slip->barcode.'" ></p>
                 ';
   return $htmlOutput;
 }else {
@@ -274,8 +275,9 @@ function iugu_boleto_link( $params ){
     //print_r($fetchInvoice);
     logModuleCall("Iugu Boleto","Buscar Fatura Iugu",$invoiceid,$fetchInvoice);
 
-    $htmlOutput = '<a class="btn btn-success btn-lg" targe="_blank" role="button" href="'.$fetchInvoice->secure_url.'?bs=true">'.$langPayNow.'</a>
+    $htmlOutput = '<a class="btn btn-success btn-lg" target="_blank" role="button" href="'.$fetchInvoice->secure_url.'?bs=true">'.$langPayNow.'</a>
                   <p>Linha Digitável: <br><small>'.$fetchInvoice->bank_slip->digitable_line.'</small></p>
+                  <p><img class="img-responsive" src="'.$fetchInvoice->bank_slip->barcode.'" ></p>
                   ';
 
     return $htmlOutput;

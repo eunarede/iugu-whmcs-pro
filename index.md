@@ -1,6 +1,6 @@
 # Iugu WHMCS Pro
 
-# Atenção: Este módulo encontra-se em faze de finalização e homologação, por favor não o utilize em ambiente de produção
+# Atenção: Este módulo encontra-se em fase de finalização e homologação, por favor não o utilize em ambiente de produção
 
 O Módulo para WHMCS Iugu Pro desenvolvido pela EunaRede proporciona uma integração completa e transparente com o gateway de pagamento [Iugu](https://iugu.com)
 

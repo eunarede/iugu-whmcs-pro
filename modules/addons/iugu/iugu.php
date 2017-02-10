@@ -2,6 +2,17 @@
 
 // http://docs.whmcs.com/Addon_Module_Developer_Docs
 
+/**
+ *
+ * @ IUGU ADDON FOR WHMCS
+ *
+ * @ Version  : 7.X
+ * @ Author   : EUNAREDE
+ * @ Release on : 2016-10-21
+ * @ Website  : http://www.eunarede.com
+ *
+ * */
+
 if (!defined("WHMCS"))
     die("Esse arquivo não pode ser acessado diretamente.");
 
@@ -45,7 +56,7 @@ function iugu_upgrade($vars){
 function iugu_activate() {
 
     # Create Custom DB Table
-    $query = "CREATE TABLE `mod_iugu` (`id` INT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY, `invoice_id` int(11) NOT NULL, `iugu_id` varchar(255) NOT NULL, `secure_id` varchar(255) NOT NULL)";
+    $query = "CREATE TABLE `mod_iugu_invoices` (`id` INT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY, `invoice_id` int(11) NOT NULL, `iugu_id` varchar(255) NOT NULL, `secure_id` varchar(255) NOT NULL)";
     $result = mysql_query($query);
     $query = "CREATE TABLE `mod_iugu_customers` (`id` INT( 10 ) NOT NULL AUTO_INCREMENT PRIMARY KEY, `user_id` int(11) NOT NULL, `iugu_id` varchar(255) NOT NULL)";
     $result = mysql_query($query);
@@ -57,7 +68,7 @@ function iugu_activate() {
 }
 
 function iugu_output($vars){
-  
+
   require_once("iugu-php/lib/Iugu.php");
 
   $iuguAccNumber = $vars['iugu_account_number'];
@@ -129,7 +140,7 @@ try{
 function iugu_deactivate() {
 
     # Remove Custom DB Table
-    $query = "DROP TABLE `mod_iugu`";
+    $query = "DROP TABLE `mod_iugu_invoices`";
     $result = mysql_query($query);
     $query = "DROP TABLE `mod_iugu_customers`";
     $result = mysql_query($query);

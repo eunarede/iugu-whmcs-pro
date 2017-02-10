@@ -3,7 +3,7 @@
  *
  * @ IUGU HOOKS FOR WHMCS
  *
- * @ Version  : 6.X
+ * @ Version  : 7.X
  * @ Author   : EUNAREDE
  * @ Release on : 2016-10-21
  * @ Website  : http://www.eunarede.com
@@ -52,7 +52,7 @@ function hook_delete_iugu_client($vars) {
 }
 
 }
-add_hook('PreDeleteClient', 1, 'hook_delete_iugu_client');
+//add_hook('PreDeleteClient', 1, 'hook_delete_iugu_client');
 // add_hook('ClientAdd', 1, 'hook_create_client');
 
  ?>

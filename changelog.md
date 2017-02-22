@@ -1,5 +1,5 @@
 # v1.5.3
-+ remoção de campo de usuário API
++ remoção de campo de usuário API e atualização da documentação
 # v1.5.2
 + tratamento de geração de faturas no Painel Iugu para evitar duplicidades de faturas para a mesma Invoice do WHMCS
 + Criação de tabela adicional e módulo addon para ativação

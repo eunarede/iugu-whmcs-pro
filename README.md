@@ -44,3 +44,4 @@ Através do método de pagamento por boleto bancário do Módulo WHMCS Iugu Pro,
 * Excluir o cliente na Iugu quando excluido no WHMCS;
 
 ## Instalação
+Acesse a instalação [aqui](docs/instalacao.md)

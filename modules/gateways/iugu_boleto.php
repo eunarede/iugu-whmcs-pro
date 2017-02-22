@@ -79,13 +79,6 @@ function iugu_boleto_config(){
             'Default' => '',
             'Description' => 'Insira o nome referente ao campo CPF/CNPJ',
         ),
-        'api_username' => array(
-            'FriendlyName' => 'Usuário API',
-            'Type' => 'text',
-            'Size' => '20',
-            'Default' => '',
-            'Description' => 'Insira o nome de usuário com acesso a API do WHMCS',
-        ),
     );
 }
 

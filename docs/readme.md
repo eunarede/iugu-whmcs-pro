@@ -1,12 +1,17 @@
 # Iugu WHMCS Pro
 
-O Módulo para WHMCS Iugu Pro desenvolvido pela EunaRede proporciona uma integração completa e transparente com o gateway de pagamento [Iugu](https://iugu.com)
+[![GitHub issues](https://img.shields.io/github/issues/eunarede/iugu-whmcs-pro.svg?style=flat-square)](https://github.com/eunarede/iugu-whmcs-pro/issues)
+[![GitHub forks](https://img.shields.io/github/forks/eunarede/iugu-whmcs-pro.svg?style=flat-square)](https://github.com/eunarede/iugu-whmcs-pro/network)
+[![GitHub stars](https://img.shields.io/github/stars/eunarede/iugu-whmcs-pro.svg?style=flat-square)](https://github.com/eunarede/iugu-whmcs-pro/stargazers)
+[![Twitter](https://img.shields.io/twitter/url/https/github.com/eunarede/iugu-whmcs-pro.svg?style=social&style=flat-square)](https://twitter.com/intent/tweet?text=Wow:&url=%5Bobject%20Object%5D)
+
+O Módulo para WHMCS Iugu Pro desenvolvido pela [EunaRede](https://www.eunarede.com) proporciona uma integração completa e transparente com o gateway de pagamento [Iugu](https://iugu.com)
 
 Este módulo consiste em dois métodos de pagamento diferentes, boleto bancário e cartão de crédito, confira os recursos a seguir:
 
-## Recursos: Cartão de Crédito
+## Módulo Cartão de Crédito
 
-![Tela do cartão de crédito](img/frontend-credit-card.png)
+![Tela do cartão de crédito](docs/img/frontend-credit-card.png)
 
 Através do método de pagamento por cartão de crédito do Módulo WHMCS Iugu Pro, é possível realizar o recebimento de faturas via cartão de crédito diretamente no WHMCS, sem necessidade de redirecionamento. O módulo utiliza os campos originais de cartão de crédito do WHMCS sem necessidade de modificação no tema.
 
@@ -25,9 +30,9 @@ Através do token de pagamento, o WHMCS poderá realizar capturas automáticas d
 * Excluir o cliente na Iugu quando excluido no WHMCS;
 * Atualizar os dados do cartão do cliente diretamente no WHMCS;
 
-## Recursos: Boleto Bancário
+## Módulo Boleto Bancário
 
-![Boleto Bancário](img/frontend-bank_slip.png)
+![Boleto Bancário](docs/img/frontend-bank_slip.png)
 
 Através do método de pagamento por boleto bancário do Módulo WHMCS Iugu Pro, é possível gerar o boleto diretamente no WHMCS, sem necessidade de redirecionamento.
 
@@ -37,3 +42,7 @@ Através do método de pagamento por boleto bancário do Módulo WHMCS Iugu Pro,
 * Dar baixa na fatura automaticamente após a compensação (retorno automático);
 * Cadastrar o cliente do WHMCS na Iugu automaticamente;
 * Excluir o cliente na Iugu quando excluido no WHMCS;
+
+## Instalação
+
+Acesse a instalação [aqui](docs/instalacao.md)

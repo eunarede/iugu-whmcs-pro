@@ -20,13 +20,13 @@ O Iugu para WHMCS requer a ativação do módulo addon que acompanha este módul
 
 Vá para **Opções** >> **Módulos Addons** e ative o módulo **Iugu**.
 
-![](imgs/2-ativar-modulo-addon-whmcs-iugu.png)
+![](img/2-ativar-modulo-addon-whmcs-iugu.png)
 
 Após a ativação do módulo, acesse sua configuração e prencha os campos:
 
 * Número da Conta Iugu: encontre seu número de conta Iugu em **Administração** >> **Configurações da conta**
 * Token da API Iugu: insira seu token ou gere um para o WHMCS
 
-![](imgs/3-token-iugu.png)
+![](img/3-token-iugu.png)
 
 > Utilize um Token da versão LIVE para o ambiente de produção e TEST para ambiente de homologação

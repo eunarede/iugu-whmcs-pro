@@ -44,4 +44,15 @@ Através do método de pagamento por boleto bancário do Módulo WHMCS Iugu Pro,
 * Excluir o cliente na Iugu quando excluido no WHMCS;
 
 ## Instalação
+
 Acesse a instalação [aqui](docs/instalacao.md)
+
+# Requerimentos
+
+* WHMCS 6.x ou superior
+
+## Créditos e isenções
+
+Este módulo é entregue "como está", a EunaRede ou sua equipe não se responsabilizam por qualquer eventual projuízo ou perda de qualquer natureza que este plugin ou a sua utilização possam estar associados.
+
+A EunaRede e nenhum de seus membros estão associados ou vinculados de alguma maneira com a Iugu. Este desenvolvido é de livre iniciativa e independente.

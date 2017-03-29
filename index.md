@@ -6,7 +6,7 @@ O Módulo para WHMCS Iugu Pro desenvolvido pela EunaRede proporciona uma integra
 
 Este módulo consiste em dois métodos de pagamento diferentes, boleto bancário e cartão de crédito, confira os recursos a seguir:
 
-## Módulo Cartão de Crédito
+## Módulo Cartão de Crédito (em breve)
 
 ![Tela do cartão de crédito](img/frontend-credit-card.png)
 
@@ -47,7 +47,7 @@ Acesse nosso Wiki para consultar a [documentação de instalação](https://gith
 
 # Suporte
 
-Você pode exclarecer suas dúvidas ou pedir ajuda abrindo uma [issue](https://github.com/eunarede/iugu-whmcs-pro/issues) neste repositório.
+Reporte bugs, problemas ou tire dúvidas [aqui](https://github.com/eunarede/iugu-whmcs-pro/issues).
 
 # Créditos
 

@@ -82,20 +82,25 @@ function iugu_boleto_config(){
     );
 }
 
-// Cadastra o cliente na Iugu
+// Cadastra o cliente na Iugu com os dados disponíveis no WHMCS
 function add_client( $params ){
+  $cpf_cnpj_field = $params['cpf_cnpj_field'];
   try{
     Iugu::setApiKey($params['api_token']);
     $iuguCustomer = Iugu_Customer::create(Array(
       "email" => $params['clientdetails']['email'],
       "name" => $params['clientdetails']['fullname'],
       "notes" => "Cliente cadastrado através do WHMCS",
+      "cpf_cnpj" => $params['customfields']['CPF/CNPJ'],
+      "zip_code" => $params['clientdetails']['postcode'],
+      "number" => $params['clientdetails']['address2'],
       "custom_variables" => Array(
         Array(
           "name" => "whmcs_user_id",
           "value" => $params['clientdetails']['userid']
         ))
     ));
+
     // Insere na tabela mod_iugu_customers o Código do cliente Iugu
     Capsule::table('mod_iugu_customers')->insert(
                                       [
@@ -103,9 +108,12 @@ function add_client( $params ){
                                         'iugu_id' => $iuguCustomer->id
                                       ]
                                     );
+
     logModuleCall("Iugu Boleto", "Criar Cliente", $params['clientdetails']['userid'], $iuguCustomer);
 
+    // retorna o ID do cliente na Iugu para gerar o boleto associado ao cliente em questão
     return $iuguCustomer->id;
+
   }catch (\Exception $e){
     //logModuleCall("Iugu Cartao","Buscar Cliente",$userid,$iuguUserId);
     echo "Problemas em cadastrar o cliente na Iugu. {$e->getMessage()}";
@@ -114,23 +122,37 @@ function add_client( $params ){
 // Busca na tabela mod_iugu_customers se já existe o cliente cadastrado
 function search_client( $user ) {
   try{
+
+    // procura no banco
     $iuguUserId = Capsule::table('mod_iugu_customers')->where('user_id', $user)->value('iugu_id');
+
+    // loga a ação para debug
     logModuleCall("Iugu Boleto","Buscar Cliente",$user,$iuguUserId);
+
+    // retorna o ID do cliente
     return $iuguUserId;
+
   }catch (\Exception $e){
     //logModuleCall("Iugu Cartao","Buscar Cliente",$userid,$iuguUserId);
-    echo "Problemas em localizar o cliente no banco de dados local. Erro 001. {$e->getMessage()}";
+    echo "Problemas em localizar o cliente no banco de dados local. {$e->getMessage()}";
   }
 }
 
-// Busca na tabela mod_iugu se já existe uma fatura criada na Iugu referente a invoice do WHMCS
+// Busca na tabela modmod_iugu_invoices_iugu se já existe uma fatura criada na Iugu referente a invoice do WHMCS
 function search_invoice( $invoice ) {
   //$iuguInvoiceId = Array();
   try{
+
     // $iuguInvoiceId = Capsule::table('mod_iugu')->where('invoice_id', $invoiceid)->value('iugu_id');
-    $iuguInvoiceId = Capsule::table('mod_iugu')->where('invoice_id', $invoice)->value('iugu_id');
+    // procura no banco
+    $iuguInvoiceId = Capsule::table('mod_iugu_invoices')->where('invoice_id', $invoice)->value('iugu_id');
+
+    // loga a ação para debug
     logModuleCall("Iugu Boleto","Buscar Fatura",$invoice,$iuguInvoiceId);
+
+    // retorna o ID da fatura
     return $iuguInvoiceId;
+
   }catch (\Exception $e){
     echo "Problemas em localizar a fatura no banco local. {$e->getMessage()}";
   }
@@ -165,8 +187,7 @@ function iugu_boleto_link( $params ){
   $postcode = $params['clientdetails']['postcode'];
   $country = $params['clientdetails']['country'];
   $phone = $params['clientdetails']['phonenumber'];
-  $cpf_cnpj_field = $params['cpf_cnpj_field'];
-  $cpf_cnpj = $params['clientdetails']["$cpf_cnpj_field"];
+  $cpf_cnpj = $params['customfields']['CPF/CNPJ'];
   //var_dump($cpf_cnpj);
 
 
@@ -247,8 +268,8 @@ function iugu_boleto_link( $params ){
   	));
     // print_r($createInvoice);
     logModuleCall("Iugu Boleto","Gerar Fatura",$invoiceid,json_decode($createInvoice, true));
-    // insere na tabela mod_iugu os dados de retorno referente a criação da fatura Iugu
-    Capsule::table('mod_iugu')->insert(
+    // insere na tabela mod_iugu_invoices os dados de retorno referente a criação da fatura Iugu
+    Capsule::table('mod_iugu_invoices')->insert(
                                                           [
                                                             'invoice_id' => $invoiceid,
                                                             'iugu_id' => $createInvoice->id,

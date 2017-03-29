@@ -55,7 +55,10 @@ function iugu_upgrade($vars){
 
 function iugu_activate() {
 
-    # Create Custom DB Table
+    #
+    # Cria as tabelas customizadas para armazenar as faturas emitidas e as associações com os ID's dos clientes
+    # cadastrados na Iugu
+    #
     $query = "CREATE TABLE `mod_iugu_invoices` (`id` INT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY, `invoice_id` int(11) NOT NULL, `iugu_id` varchar(255) NOT NULL, `secure_id` varchar(255) NOT NULL)";
     $result = mysql_query($query);
     $query = "CREATE TABLE `mod_iugu_customers` (`id` INT( 10 ) NOT NULL AUTO_INCREMENT PRIMARY KEY, `user_id` int(11) NOT NULL, `iugu_id` varchar(255) NOT NULL)";

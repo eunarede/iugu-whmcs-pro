@@ -1,3 +1,6 @@
+# 1.5.3.1
++ correção de erro 505 após ativar o módulo #5
++ aprimoramento dos dados enviados a Iugu para cadastro do cliente #6
 # v1.5.3
 + remoção de campo de usuário API e atualização da documentação
 # v1.5.2

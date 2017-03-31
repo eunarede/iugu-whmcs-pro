@@ -4,6 +4,7 @@
 [![GitHub forks](https://img.shields.io/github/forks/eunarede/iugu-whmcs-pro.svg?style=flat-square)](https://github.com/eunarede/iugu-whmcs-pro/network)
 [![GitHub stars](https://img.shields.io/github/stars/eunarede/iugu-whmcs-pro.svg?style=flat-square)](https://github.com/eunarede/iugu-whmcs-pro/stargazers)
 [![Twitter](https://img.shields.io/twitter/url/https/github.com/eunarede/iugu-whmcs-pro.svg?style=social&style=flat-square)](https://twitter.com/intent/tweet?text=Wow:&url=%5Bobject%20Object%5D)
+[![Gitter](https://badges.gitter.im/eunarede/iugu-whmcs-pro.svg)](https://gitter.im/eunarede/iugu-whmcs-pro?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 O Módulo para WHMCS Iugu Pro desenvolvido pela [EunaRede](https://www.eunarede.com) proporciona uma integração completa e transparente com o gateway de pagamento [Iugu](https://iugu.com)
 

@@ -42,16 +42,6 @@ function iugu_config() {
     return $configarray;
 }
 
-function iugu_upgrade($vars){
-  $version = $vars['version'];
-
-  #Cria a nova tabela no banco na atualização de versão
-  if($version < 2.0){
-    $query = "CREATE TABLE `mod_iugu_customers` (`id` INT( 10 ) NOT NULL AUTO_INCREMENT PRIMARY KEY, `user_id` int(11) NOT NULL, `iugu_id` varchar(255) NOT NULL)";
-    $result = mysql_query($query);
-
-  }
-}
 
 function iugu_activate() {
 
@@ -74,7 +64,6 @@ function iugu_output($vars){
 
   require_once("iugu-php/lib/Iugu.php");
 
-  $iuguAccNumber = $vars['iugu_account_number'];
   $iuguApiToken = $vars['iugu_api_token'];
 
   // Busca na tabela mod_iugu se já existe uma fatura criada na Iugu referente a invoice do WHMCS

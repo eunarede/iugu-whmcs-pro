@@ -84,7 +84,6 @@ function iugu_boleto_config(){
 
 // Cadastra o cliente na Iugu com os dados disponíveis no WHMCS
 function add_client( $params ){
-  $cpf_cnpj_field = $params['cpf_cnpj_field'];
   try{
     Iugu::setApiKey($params['api_token']);
     $iuguCustomer = Iugu_Customer::create(Array(
@@ -164,21 +163,15 @@ function iugu_boleto_link( $params ){
 // System Parameters
 	$apiToken = $params['api_token'];
   $apiUserName = $params['api_username'];
-  $companyName = $params['companyname'];
   $systemUrl = $params['systemurl'];
   $returnUrl = $params['returnurl'];
   $expired_url = $returnUrl;
 	$notification_url = $systemUrl . '/modules/gateways/callback/iugu_boleto.php';
   $langPayNow = "Imprimir Boleto";
-  $moduleDisplayName = $params['name'];
-  $moduleName = $params['paymentmethod'];
-  $whmcsVersion = $params['whmcsVersion'];
 
 // Client Parameters
   $userid = $params['clientdetails']['userid'];
   $fullname = $params['clientdetails']['fullname'];
-  $firstname = $params['clientdetails']['firstname'];
-  $lastname = $params['clientdetails']['lastname'];
   $email = $params['clientdetails']['email'];
   $address1 = $params['clientdetails']['address1'];
   $address2 = $params['clientdetails']['address2'];
@@ -186,7 +179,6 @@ function iugu_boleto_link( $params ){
   $state = $params['clientdetails']['state'];
   $postcode = $params['clientdetails']['postcode'];
   $country = $params['clientdetails']['country'];
-  $phone = $params['clientdetails']['phonenumber'];
   $cpf_cnpj = $params['customfields']['CPF/CNPJ'];
   //var_dump($cpf_cnpj);
 
@@ -194,8 +186,8 @@ function iugu_boleto_link( $params ){
 	// Invoice Parameters
 	$invoiceid = $params['invoiceid'];
 	$description = $params["description"];
-	$amount = number_format($params['amount'], 2, '', '');
-	$currencyCode = $params['currency'];
+	// $amount = number_format($params['amount'], 2, '', '');
+	// $currencyCode = $params['currency'];
   // solicitação a API interna do WHMCS para busca de detalhes da fatura, principalmente sua data de vencimento
   $command = "getinvoice";
   $adminuser = $apiUserName;

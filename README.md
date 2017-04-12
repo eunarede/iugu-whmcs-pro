@@ -1,5 +1,6 @@
 # Iugu WHMCS Pro
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/4ab6dcf71d8946b892cfd8749f9666ee)](https://www.codacy.com/app/andrekutianski/iugu-whmcs-pro?utm_source=github.com&utm_medium=referral&utm_content=eunarede/iugu-whmcs-pro&utm_campaign=badger)
 [![GitHub issues](https://img.shields.io/github/issues/eunarede/iugu-whmcs-pro.svg?style=flat-square)](https://github.com/eunarede/iugu-whmcs-pro/issues)
 [![GitHub forks](https://img.shields.io/github/forks/eunarede/iugu-whmcs-pro.svg?style=flat-square)](https://github.com/eunarede/iugu-whmcs-pro/network)
 [![GitHub stars](https://img.shields.io/github/stars/eunarede/iugu-whmcs-pro.svg?style=flat-square)](https://github.com/eunarede/iugu-whmcs-pro/stargazers)

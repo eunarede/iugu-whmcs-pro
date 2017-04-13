@@ -1,8 +1,8 @@
 # Iugu WHMCS Pro
 
-# Atenção: Este módulo encontra-se em fase de finalização e homologação, por favor não o utilize em ambiente de produção
-
 O Módulo para WHMCS Iugu Pro desenvolvido pela EunaRede proporciona uma integração completa e transparente com o gateway de pagamento [Iugu](https://iugu.com)
+
+Assita o vídeo demonstrando o funcionamento do módulo boleto em [https://youtu.be/00dDINuXT1g](https://youtu.be/00dDINuXT1g)
 
 Este módulo consiste em dois métodos de pagamento diferentes, boleto bancário e cartão de crédito, confira os recursos a seguir:
 

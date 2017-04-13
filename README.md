@@ -16,6 +16,8 @@ Este módulo consiste em dois métodos de pagamento diferentes, boleto bancário
 
 ![Tela do cartão de crédito](docs/img/frontend-credit-card.png)
 
+Assita um video demonstrando as funcionalidades do módulo cartão de crédito em [https://youtu.be/00dDINuXT1g](https://youtu.be/00dDINuXT1g)
+
 Através do método de pagamento por cartão de crédito do Módulo WHMCS Iugu Pro, é possível realizar o recebimento de faturas via cartão de crédito diretamente no WHMCS, sem necessidade de redirecionamento. O módulo utiliza os campos originais de cartão de crédito do WHMCS sem necessidade de modificação no tema.
 
 Ao realizar um pedido ou na atualização do cartão de crédito no perfil de um cliente já existente, o módulo captura os dados do cartão e utilizando a API da Iugu, gera um código único criptogrado: o token de pagamento.

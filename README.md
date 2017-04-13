@@ -8,6 +8,11 @@
 [![Gitter](https://badges.gitter.im/eunarede/iugu-whmcs-pro.svg)](https://gitter.im/eunarede/iugu-whmcs-pro?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/4ab6dcf71d8946b892cfd8749f9666ee)](https://www.codacy.com/app/andrekutianski/iugu-whmcs-pro?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=eunarede/iugu-whmcs-pro&amp;utm_campaign=Badge_Grade)
 
+Este módulo foi últil para você? Ajude a manter o seu desenvolvimento ou simplesmente mostre sua gratidão doando para o seu desenvolvedor:
+
+[
+![Doar](https://www.paypalobjects.com/pt_BR/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MZBTJ2JUDCZVJ)
+
 O Módulo para WHMCS Iugu Pro desenvolvido pela [EunaRede](https://www.eunarede.com) proporciona uma integração completa e transparente com o gateway de pagamento [Iugu](https://iugu.com)
 
 Este módulo consiste em dois métodos de pagamento diferentes, boleto bancário e cartão de crédito, confira os recursos a seguir:

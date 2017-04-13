@@ -226,8 +226,8 @@ function iugu_boleto_link( $params ){
     $iuguClientId = add_client( $params );
   }
   // se não retornar uma fatura com o ID procurado, presume-se que é nova. Então cadastra.
-  if(!$iuguInvoiceId){
-    Iugu::setApiKey($apiToken);
+  if( !$iuguInvoiceId ){
+    Iugu::setApiKey( $apiToken );
   	$createInvoice = Iugu_Invoice::create(Array(
   		"email" => $email,
   		"due_date" => $dueDate,

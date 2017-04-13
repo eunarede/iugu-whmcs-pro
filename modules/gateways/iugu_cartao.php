@@ -66,13 +66,59 @@ function iugu_cartao_config(){
             'Default' => '',
             'Description' => 'Acesse sua conta Iugu para gerar seu token.',
         ),
+        'test_mode' => array(
+            'FriendlyName' => 'Ativar modo teste',
+            'Type' => 'yesno',
+            'Description' => 'ativar a utilização de cartões de crédito de teste.'
+        ),
     );
+}
+
+function iugu_create_client( $params ) {
+  Iugu::setApiKey($params['api_token']);
+  $iuguUser = Iugu_Customer::create(Array(
+    "email" => $params['clientdetails']['email'],
+    "name" => $params['clientdetails']['firstname'] . ' ' . $params['clientdetails']['lastname'],
+    "notes" => "Cliente criado através do WHMCS",
+    "custom_variables" => Array(
+      Array(
+        "name" => "whmcs_user_id",
+        "value" => $params['clientdetails']['userid']
+      ))
+  ));
+  // Insere na tabela mod_iugu_customers o Código do cliente Iugu
+  Capsule::table('mod_iugu_customers')->insert(
+                                    [
+                                      'user_id' => $params['clientdetails']['userid'],
+                                      'iugu_id' => $iuguUser->id
+                                    ]
+                                  );
+  logModuleCall("Iugu","iugu_create_client",$params['clientdetails']['userid'],$iuguUser);
+  return $iuguUser->id;
+}
+
+// Busca na tabela mod_iugu_customers se já existe o cliente cadastrado
+function iugu_search_client( $user ) {
+
+    // procura no banco
+    $iuguUserId = Capsule::table('mod_iugu_customers')->where('user_id', $user)->value('iugu_id');
+
+    // loga a ação para debug
+    logModuleCall("Iugu","iugu_search_client",$user,$iuguUserId);
+
+    // retorna o ID do cliente
+    return $iuguUserId;
+
 }
 
 
 function iugu_cartao_storeremote($params){
 
   $apiToken = $params['api_token'];
+  $testMode = "true";
+  if (!$params['test_mode']) {
+    $testMode = "false";
+  }
   $accountId = $params['iugu_account_id'];
   // parametro com o ID da conta WHMCS
   $userid = $params['clientdetails']['userid'];
@@ -89,40 +135,22 @@ function iugu_cartao_storeremote($params){
   $cardCvv = $params['cardcvv']; # the verification card code
   // Busca na tabela mod_iugu se já existe um cliente criado na Iugu
   try{
-  $iuguUserId = Capsule::table('mod_iugu_customers')->where('user_id', $userid)->value('iugu_id');
-  logModuleCall("Iugu Cartao","Buscar Cliente",$userid,$iuguUserId);
-}catch (\Exception $e){
-  //logModuleCall("Iugu Cartao","Buscar Cliente",$userid,$iuguUserId);
+  $iuguClientId = iugu_search_client( $userid );
+  if (!$iuguClientId) {
+    $iuguClientId = iugu_create_client($params);
+  }
+  logModuleCall("iugu_cartao_storeremote","Buscar Cliente",$userid,$iuguClientId);
+  }catch (\Exception $e){
+  //logModuleCall("Iugu Cartao","Buscar Cliente",$userid,$iuguClientId);
   echo "Problemas em localizar o cliente no banco de dados local. Erro 001. {$e->getMessage()}";
-}
-if (!$iuguUserId) {
-  Iugu::setApiKey($apiToken);
-  $iuguUser = Iugu_Customer::create(Array(
-    "email" => $clientEmail,
-    "name" => $clientFirstName,
-    "notes" => "Cliente criado através do WHMCS",
-    "custom_variables" => Array(
-      Array(
-        "name" => "whmcs_user_id",
-        "value" => $userid
-      ))
-  ));
-  // Insere na tabela mod_iugu_customers o Código do cliente Iugu
-  Capsule::table('mod_iugu_customers')->insert(
-                                    [
-                                      'user_id' => $userid,
-                                      'iugu_id' => $iuguUser->id
-                                    ]
-                                  );
-  logModuleCall("Iugu Cartao","Criar Cliente",$userid,$iuguUser);
-  $iuguUserId = $iuguUser->id;
-}
+  }
+
   // Cria o token de pagamento através dos dados do cartão do cliente
   $urlToken = 'https://api.iugu.com/v1/payment_token';
   $postfieldsToken = array(
     "account_id" => $accountId,
     "method" => 'credit_card',
-    "test" => "true",
+    "test" => $testMode,
     "data[number]" => $cardNumber,
     "data[verification_value]" => $cardCvv,
     "data[first_name]" => $clientFirstName,
@@ -137,7 +165,7 @@ if (!$iuguUserId) {
   logModuleCall("Iugu Cartao","Criar Token",$postfieldsToken,$iuguCreditCardToken);
 
     //cria o método de pagamento padrão para armazenar o token do cartão de credito na iugu
-    $urlMethod = "https://api.iugu.com/v1/customers/{$iuguUserId}/payment_methods";
+    $urlMethod = "https://api.iugu.com/v1/customers/{$iuguClientId}/payment_methods";
     $postfieldsMethod = array(
       "api_token" => $apiToken,
       "description" => 'Cartão Inserido via WHMCS',
@@ -170,29 +198,16 @@ if (!$iuguUserId) {
 } //iugu_cartao_storeremote
 
 
-function iugu_cartao_capture($params){
+function iugu_cartao_capture( $params ){
 
 // System Parameters
 	$apiToken = $params['api_token'];
-  $moduleDisplayName = $params['name'];
 
-
-// Client Parameters
-  $fullname = $params['clientdetails']['fullname'];
-  $firstname = $params['clientdetails']['firstname'];
-  $lastname = $params['clientdetails']['lastname'];
-  $email = $params['clientdetails']['email'];
-  $phone = $params['clientdetails']['phonenumber'];
-  $cpf_cnpj = $params['clientdetails']['customfields1'];
-  $userid = $params['userid'];
+  $userid = $params['clientdetails']['userid'];
   //var_dump($cpf_cnpj);
 
 	// Invoice Parameters
 	$invoiceId = $params['invoiceid'];
-	$description = $params["description"];
-	$amount = number_format($params['amount'], 2, '', '');
-	$currencyCode = $params['currency'];
-	$dueDate = $params['duedate'];
   $tokenisedPaymentId = $params['gatewayid'];
 
 	/** @var stdClass $client */
@@ -215,10 +230,14 @@ function iugu_cartao_capture($params){
 
   // Busca na tabela mod_iugu_customers o ID do cliente da Iugu
   try{
-    $iuguCustomerId = Capsule::table('mod_iugu_customers')->where('user_id', $userid)->value('iugu_id');
-    logModuleCall("Iugu Cartao","Buscar Cliente para Captura","Cliente",$iuguCustomerId);
+    $iuguCustomerId = iugu_search_client( $userid );
+    logModuleCall("Iugu","iugu_cartao_capture","Cliente",$iuguCustomerId);
   }catch (\Exception $e){
     echo "Problemas em localizar o cliente no banco de dados local. {$e->getMessage()}";
+  }
+
+  if (!$iuguCustomerId) {
+    $iuguCustomerId = iugu_create_client( $params );
   }
 
 	Iugu::setApiKey($apiToken);
@@ -230,7 +249,7 @@ function iugu_cartao_capture($params){
 	));
 
  if($chargeInvoice->success){
-   logModuleCall("Iugu Cartao","Captura da Fatura","Sucesso",$chargeInvoice);
+   logModuleCall("Iugu Cartao","Captura da Fatura","Sucesso",$chargeInvoice->invoice_id);
    return array(
      "status" => "success",
      "transid" => $chargeInvoice->invoice_id,

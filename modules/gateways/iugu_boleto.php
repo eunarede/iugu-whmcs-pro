@@ -259,7 +259,7 @@ function iugu_boleto_link( $params ){
   		)
   	));
     // print_r($createInvoice);
-    logModuleCall("Iugu Boleto","Gerar Fatura",$invoiceid,json_decode($createInvoice, true));
+    logModuleCall("Iugu Boleto","Gerar Fatura", $invoiceid, $createInvoice);
     // insere na tabela mod_iugu_invoices os dados de retorno referente a criação da fatura Iugu
     Capsule::table('mod_iugu_invoices')->insert(
                                                           [

@@ -56,6 +56,14 @@ Através do método de pagamento por boleto bancário do Módulo [WHMCS] Iugu Pr
 * Cadastrar o cliente do [WHMCS] na Iugu automaticamente;
 * Excluir o cliente na Iugu quando excluido no [WHMCS];
 
+## Atualização do Cartão de Crédito
+
+Atualize o cartão de crédito do cliente diretamente no perfil do [WHMCS].
+
+Assista o [vídeo de demonstração](https://youtu.be/dqzsNcbA-Gg).
+
+![Atualização do cartão](https://raw.githubusercontent.com/wiki/eunarede/iugu-whmcs-pro/imgs/giphy.gif)
+
 ## Instalação
 
 Estamos constantemente aprimorando este módulo e enriquecendo sua documentação. Para acessar a documentação de instalação, veja nossa [Wiki]

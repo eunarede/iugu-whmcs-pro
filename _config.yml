@@ -2,7 +2,7 @@ title: Módulo Iugu para WHMCS
 description: Módulo de Pagamento Iugu para WHMCS
 google_analytics: 
 show_downloads: true
-theme: jekyll-theme-cayman
+theme: jekyll-theme-tactile
 
 gems:
   - jekyll-mentions

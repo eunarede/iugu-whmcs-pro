@@ -1,3 +1,7 @@
+# 1.5.7
++ Remoção do submodulo do SDK da Iugu.
++ Correção do diretório do SDK Iugu.
++ Provavelmente resolva o problema reportado aqui #12
 # 1.5.3.1
 + correção de erro 505 após ativar o módulo #5
 + aprimoramento dos dados enviados a Iugu para cadastro do cliente #6

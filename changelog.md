@@ -1,3 +1,7 @@
+# 1.5.8
++ corrigido erro 500 quando a fatura está vencida. Caso esteja a data do boleto é alterada para o dia atual #14
++ adicionado o campo personalizado de CPF/CNPJ para cadastramento na Iugu para atender a nova exigencia para boletos registrados #9
++ corrigido o problema de cadastramendo do cliente na Iugu quando é alterado a forma de pagamento entre cartão/boleto boleto/cartão #12 #14
 # 1.5.7
 + Remoção do submodulo do SDK da Iugu.
 + Correção do diretório do SDK Iugu.

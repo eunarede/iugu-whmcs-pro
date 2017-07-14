@@ -66,6 +66,13 @@ function iugu_cartao_config(){
             'Default' => '',
             'Description' => 'Acesse sua conta Iugu para gerar seu token.',
         ),
+        'cpf_cnpj_field' => array(
+            'FriendlyName' => 'Campo CPF/CNPJ',
+            'Type' => 'text',
+            'Size' => '20',
+            'Default' => '',
+            'Description' => 'Insira o nome referente ao campo CPF/CNPJ',
+        ),
         'test_mode' => array(
             'FriendlyName' => 'Ativar modo teste',
             'Type' => 'yesno',
@@ -74,11 +81,18 @@ function iugu_cartao_config(){
     );
 }
 
-function iugu_create_client( $params ) {
+function iugu_cartao_add_client( $params ) {
+
+  $campoDoc = $params['cpf_cnpj_field'];
+
   Iugu::setApiKey($params['api_token']);
+  
   $iuguUser = Iugu_Customer::create(Array(
     "email" => $params['clientdetails']['email'],
-    "name" => $params['clientdetails']['firstname'] . ' ' . $params['clientdetails']['lastname'],
+    "name" => $params['clientdetails']['fullname'],
+    "cpf_cnpj" => $params['clientdetails'][$campoDoc],
+    "zip_code" => $params['clientdetails']['postcode'],
+    "number" => $params['clientdetails']['address2'],
     "notes" => "Cliente criado através do WHMCS",
     "custom_variables" => Array(
       Array(
@@ -98,7 +112,7 @@ function iugu_create_client( $params ) {
 }
 
 // Busca na tabela mod_iugu_customers se já existe o cliente cadastrado
-function iugu_search_client( $user ) {
+function iugu_cartao_search_client( $user ) {
 
     // procura no banco
     $iuguUserId = Capsule::table('mod_iugu_customers')->where('user_id', $user)->value('iugu_id');
@@ -135,9 +149,9 @@ function iugu_cartao_storeremote($params){
   $cardCvv = $params['cardcvv']; # the verification card code
   // Busca na tabela mod_iugu se já existe um cliente criado na Iugu
   try{
-  $iuguClientId = iugu_search_client( $userid );
-  if (!$iuguClientId) {
-    $iuguClientId = iugu_create_client($params);
+  $iuguClientId = iugu_cartao_search_client( $userid );
+  if ( is_null($iuguClientId) ) {
+    $iuguClientId = iugu_cartao_add_client($params);
   }
   logModuleCall("iugu_cartao_storeremote","Buscar Cliente",$userid,$iuguClientId);
   }catch (\Exception $e){
@@ -200,7 +214,7 @@ function iugu_cartao_storeremote($params){
 
 function iugu_cartao_capture( $params ){
 
-// System Parameters
+  // System Parameters
 	$apiToken = $params['api_token'];
 
   $userid = $params['clientdetails']['userid'];
@@ -230,14 +244,14 @@ function iugu_cartao_capture( $params ){
 
   // Busca na tabela mod_iugu_customers o ID do cliente da Iugu
   try{
-    $iuguCustomerId = iugu_search_client( $userid );
+    $iuguCustomerId = iugu_cartao_search_client( $userid );
     logModuleCall("Iugu","iugu_cartao_capture","Cliente",$iuguCustomerId);
   }catch (\Exception $e){
     echo "Problemas em localizar o cliente no banco de dados local. {$e->getMessage()}";
   }
 
   if (!$iuguCustomerId) {
-    $iuguCustomerId = iugu_create_client( $params );
+    $iuguCustomerId = iugu_cartao_add_client( $params );
   }
 
 	Iugu::setApiKey($apiToken);

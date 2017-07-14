@@ -83,14 +83,18 @@ function iugu_boleto_config(){
 }
 
 // Cadastra o cliente na Iugu com os dados disponíveis no WHMCS
-function add_client( $params ){
+function iugu_boleto_add_client( $params ){
+
+  // busco o campo personalizado referente ao documento do cliente configurado no modulo
+  $campoDoc = $params['cpf_cnpj_field'];
+
   try{
     Iugu::setApiKey($params['api_token']);
     $iuguCustomer = Iugu_Customer::create(Array(
       "email" => $params['clientdetails']['email'],
       "name" => $params['clientdetails']['fullname'],
       "notes" => "Cliente cadastrado através do WHMCS",
-      "cpf_cnpj" => $params['customfields']['CPF/CNPJ'],
+      "cpf_cnpj" => $params['clientdetails'][$campoDoc],
       "zip_code" => $params['clientdetails']['postcode'],
       "number" => $params['clientdetails']['address2'],
       "custom_variables" => Array(
@@ -100,15 +104,19 @@ function add_client( $params ){
         ))
     ));
 
-    // Insere na tabela mod_iugu_customers o Código do cliente Iugu
-    Capsule::table('mod_iugu_customers')->insert(
-                                      [
-                                        'user_id' => $params['clientdetails']['userid'],
-                                        'iugu_id' => $iuguCustomer->id
-                                      ]
-                                    );
+    // print_r($params);
 
-    logModuleCall("Iugu Boleto", "Criar Cliente", $params['clientdetails']['userid'], $iuguCustomer);
+    if(!is_null($iuguCustomer->id)){
+      // Insere na tabela mod_iugu_customers o Código do cliente Iugu
+      Capsule::table('mod_iugu_customers')->insert(
+                                        [
+                                          'user_id' => $params['clientdetails']['userid'],
+                                          'iugu_id' => $iuguCustomer->id
+                                        ]
+                                      );
+    }
+
+    logModuleCall("Iugu Boleto", "Criar Cliente", $params, $iuguCustomer);
 
     // retorna o ID do cliente na Iugu para gerar o boleto associado ao cliente em questão
     return $iuguCustomer->id;
@@ -119,7 +127,7 @@ function add_client( $params ){
   }
 }
 // Busca na tabela mod_iugu_customers se já existe o cliente cadastrado
-function search_client( $user ) {
+function iugu_boleto_search_client( $user ) {
   try{
 
     // procura no banco
@@ -138,7 +146,7 @@ function search_client( $user ) {
 }
 
 // Busca na tabela modmod_iugu_invoices_iugu se já existe uma fatura criada na Iugu referente a invoice do WHMCS
-function search_invoice( $invoice ) {
+function iugu_boleto_search_invoice( $invoice ) {
   //$iuguInvoiceId = Array();
   try{
 
@@ -179,8 +187,9 @@ function iugu_boleto_link( $params ){
   $state = $params['clientdetails']['state'];
   $postcode = $params['clientdetails']['postcode'];
   $country = $params['clientdetails']['country'];
-  $cpf_cnpj = $params['customfields']['CPF/CNPJ'];
-  //var_dump($cpf_cnpj);
+  $campoDoc = $params['cpf_cnpj_field'];
+  $cpf_cnpj = $params['clientdetails'][$campoDoc];
+  // var_dump($params['clientdetails']['customfields1']);
 
 
 	// Invoice Parameters
@@ -195,6 +204,10 @@ function iugu_boleto_link( $params ){
   $results = localAPI($command,$values,$adminuser);
   //  print_r($results);
   $dueDate = date('d/m/Y', strtotime($results['duedate']));
+  $today = date(d/m/Y);
+  if($today > $dueDate) {
+    $dueDate = $today;
+  }
   // echo "<br>";
   // echo "data de vencimento";
   // print_r(date('d/m/Y', strtotime($results['duedate'])));
@@ -218,15 +231,21 @@ function iugu_boleto_link( $params ){
   }
 
   // busca o usuario no banco local
-  $iuguClientId = search_client( $userid );
+  $iuguClientId = iugu_boleto_search_client( $userid );
   // busca informações da fatura no banco local para comparação e verificação
-  $iuguInvoiceId = search_invoice( $invoiceid );
+  $iuguInvoiceId = iugu_boleto_search_invoice( $invoiceid );
   // se não retornar o usuário, presume-se que ele não existe. Então vamos cadastra-lo.
-  if(!$iuguClientId){
-    $iuguClientId = add_client( $params );
+  if( is_null($iuguClientId) ){
+    try {
+
+      $iuguClientId = iugu_boleto_add_client( $params );
+
+    }catch (\Exception $e) {
+      echo "Não foi possível cadastrar o cliente na Iugu. {$e->getMessage()}";
+    }
   }
   // se não retornar uma fatura com o ID procurado, presume-se que é nova. Então cadastra.
-  if( !$iuguInvoiceId ){
+  if( is_null($iuguInvoiceId) ){
     Iugu::setApiKey( $apiToken );
   	$createInvoice = Iugu_Invoice::create(Array(
   		"email" => $email,
@@ -275,7 +294,7 @@ function iugu_boleto_link( $params ){
                 ';
   return $htmlOutput;
 }else {
-
+    // caso a fatura já exista nos registros do banco local, busco as informações na Iugu desta fatura
     Iugu::setApiKey($apiToken);
     $fetchInvoice = Iugu_Invoice::fetch($iuguInvoiceId);
     //print_r($fetchInvoice);

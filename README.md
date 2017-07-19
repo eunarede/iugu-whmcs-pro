@@ -10,8 +10,6 @@
 
 Este módulo foi últil para você? Mostre sua gratidão contribuindo com um choop, café ou até mesmo um salto de paraquedas!
 
-[
-![Doar](https://www.paypalobjects.com/pt_BR/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MZBTJ2JUDCZVJ)
 
 * [Requerimentos](https://github.com/eunarede/iugu-whmcs-pro/wiki/Requerimentos)
 * [Instalação](https://github.com/eunarede/iugu-whmcs-pro/wiki/instalacao)
@@ -58,7 +56,7 @@ Através do método de pagamento por boleto bancário do Módulo [WHMCS] Iugu Pr
 
 ## Atualização do Cartão de Crédito
 
-Atualize o cartão de crédito do cliente diretamente no perfil do [WHMCS].
+Atualização do cartão de crédito do cliente diretamente no [WHMCS]. Ao atualizar o cartão de crédito de um cliente, será gerado novo Token de cobrança recorrente na Iugu. Nunca mais perca uma venda e evite que seu cliente esqueça de pagar suas faturas na data de vencimento!
 
 Assista o [vídeo de demonstração](https://youtu.be/dqzsNcbA-Gg).
 

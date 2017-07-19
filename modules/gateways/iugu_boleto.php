@@ -96,7 +96,7 @@ function iugu_boleto_add_client( $params ){
       "notes" => "Cliente cadastrado através do WHMCS",
       "cpf_cnpj" => $params['clientdetails'][$campoDoc],
       "zip_code" => $params['clientdetails']['postcode'],
-      "number" => $params['clientdetails']['address2'],
+      "number" => "000",
       "custom_variables" => Array(
         Array(
           "name" => "whmcs_user_id",

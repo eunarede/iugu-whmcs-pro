@@ -81,19 +81,20 @@ function iugu_cartao_config(){
     );
 }
 
+// Cadastra o cliente na Iugu com os dados disponíveis no WHMCS
 function iugu_cartao_add_client( $params ) {
 
   $campoDoc = $params['cpf_cnpj_field'];
 
   Iugu::setApiKey($params['api_token']);
-  
+
   $iuguUser = Iugu_Customer::create(Array(
     "email" => $params['clientdetails']['email'],
     "name" => $params['clientdetails']['fullname'],
+    "notes" => "Cliente cadastrado através do WHMCS",
     "cpf_cnpj" => $params['clientdetails'][$campoDoc],
     "zip_code" => $params['clientdetails']['postcode'],
-    "number" => $params['clientdetails']['address2'],
-    "notes" => "Cliente criado através do WHMCS",
+    "number" => "000",
     "custom_variables" => Array(
       Array(
         "name" => "whmcs_user_id",

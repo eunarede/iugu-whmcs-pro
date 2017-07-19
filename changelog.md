@@ -1,3 +1,5 @@
+# 1.5.9
++ [fix] Inserido o parametro _number_ para cadastramento do cliente na Iugu para constante '000'. API Iugu exige que ao enviar o parametro _zip_code_ seja enviado _number_, WHMCS não possui este parametro, o que ocasionava problemas no cadastramento do cliente como mencionado na issue #14
 # 1.5.8
 + corrigido erro 500 quando a fatura está vencida. Caso esteja a data do boleto é alterada para o dia atual #14
 + adicionado o campo personalizado de CPF/CNPJ para cadastramento na Iugu para atender a nova exigencia para boletos registrados #9

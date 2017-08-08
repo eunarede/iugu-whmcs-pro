@@ -3,7 +3,7 @@ if (!defined("WHMCS")) {
     die("This file cannot be accessed directly");
 }
 use Illuminate\Database\Capsule\Manager as Capsule;
-require_once("iugu/src/Unirest.php");
+require_once("iugu/Iugu.php");
 /**
  * Define module related meta data.
  *
@@ -17,7 +17,7 @@ require_once("iugu/src/Unirest.php");
 function iugu_boleto_MetaData()
 {
     return array(
-        'DisplayName' => 'Iugu WHMCS Pro - Boleto',
+        'DisplayName' => 'Iugu WHMCS Pro - Boleto com Cadastro',
         'APIVersion' => '1.1', // Use API Version 1.1
         'DisableLocalCredtCardInput' => true,
         'TokenisedStorage' => true,
@@ -49,7 +49,7 @@ function iugu_boleto_config(){
         // nome amigável do módulo
         'FriendlyName' => array(
             'Type' => 'System',
-            'Value' => 'Iugu WHMCS v1.5 - Boleto',
+            'Value' => 'Iugu WHMCS v1.5 - Boleto com Cadastro',
         ),
         // token da API da Iugu
         'api_token' => array(
@@ -79,12 +79,70 @@ function iugu_boleto_config(){
             'Default' => '',
             'Description' => 'Insira o nome referente ao campo CPF/CNPJ',
         ),
-        'ignore_due_email' => array(
-            'FriendlyName' => 'Ignorar e-mails de cobrança da Iugu',
-            'Type' => 'yesno',
-            'Description' => 'Desabilitar o envio de e-mails da Iugu diretamente ao cliente.'
-        ),
     );
+}
+
+// Cadastra o cliente na Iugu com os dados disponíveis no WHMCS
+function iugu_boleto_add_client( $params ){
+
+  // busco o campo personalizado referente ao documento do cliente configurado no modulo
+  $campoDoc = $params['cpf_cnpj_field'];
+
+  try{
+    Iugu::setApiKey($params['api_token']);
+    $iuguCustomer = Iugu_Customer::create(Array(
+      "email" => $params['clientdetails']['email'],
+      "name" => $params['clientdetails']['fullname'],
+      "notes" => "Cliente cadastrado através do WHMCS",
+      "cpf_cnpj" => $params['clientdetails'][$campoDoc],
+      "zip_code" => $params['clientdetails']['postcode'],
+      "number" => "000",
+      "custom_variables" => Array(
+        Array(
+          "name" => "whmcs_user_id",
+          "value" => $params['clientdetails']['userid']
+        ))
+    ));
+
+    // print_r($params);
+
+    if(!is_null($iuguCustomer->id)){
+      // Insere na tabela mod_iugu_customers o Código do cliente Iugu
+      Capsule::table('mod_iugu_customers')->insert(
+                                        [
+                                          'user_id' => $params['clientdetails']['userid'],
+                                          'iugu_id' => $iuguCustomer->id
+                                        ]
+                                      );
+    }
+
+    logModuleCall("Iugu Boleto", "Criar Cliente", $params, json_decode($iuguCustomer, true));
+
+    // retorna o ID do cliente na Iugu para gerar o boleto associado ao cliente em questão
+    return $iuguCustomer->id;
+
+  }catch (\Exception $e){
+    //logModuleCall("Iugu Cartao","Buscar Cliente",$userid,$iuguUserId);
+    echo "Problemas em cadastrar o cliente na Iugu. {$e->getMessage()}";
+  }
+}
+// Busca na tabela mod_iugu_customers se já existe o cliente cadastrado
+function iugu_boleto_search_client( $user ) {
+  try{
+
+    // procura no banco
+    $iuguUserId = Capsule::table('mod_iugu_customers')->where('user_id', $user)->value('iugu_id');
+
+    // loga a ação para debug
+    logModuleCall("Iugu Boleto","Buscar Cliente",$user,$iuguUserId);
+
+    // retorna o ID do cliente
+    return $iuguUserId;
+
+  }catch (\Exception $e){
+    //logModuleCall("Iugu Cartao","Buscar Cliente",$userid,$iuguUserId);
+    echo "Problemas em localizar o cliente no banco de dados local. {$e->getMessage()}";
+  }
 }
 
 // Busca na tabela modmod_iugu_invoices_iugu se já existe uma fatura criada na Iugu referente a invoice do WHMCS
@@ -165,49 +223,53 @@ function iugu_boleto_link( $params ){
     $itens[] = $item;
   }
 
-  // basic auth
-  Unirest\Request::auth($apiToken, '');
-
-
+  // busca o usuario no banco local
+  $iuguClientId = iugu_boleto_search_client( $userid );
   // busca informações da fatura no banco local para comparação e verificação
   $iuguInvoiceId = iugu_boleto_search_invoice( $invoiceid );
+  // se não retornar o usuário, presume-se que ele não existe. Então vamos cadastra-lo.
+  if( !$iuguClientId ){
+    try {
 
+      $iuguClientId = iugu_boleto_add_client( $params );
+
+    }catch (\Exception $e) {
+      echo "Não foi possível cadastrar o cliente na Iugu. {$e->getMessage()}";
+    }
+  }
   // se não retornar uma fatura com o ID procurado, presume-se que é nova. Então cadastra.
   if( !$iuguInvoiceId ){
-
-    $headers = array('Accept' => 'application/json');
-    $data = array(
-          "email" => $email,
-      		"due_date" => $dueDate,
-      		"return_url" => $returnUrl,
-      		"expired_url" => $expired_url,
-      		"notification_url" => $notification_url,
-          "payable_with" => 'bank_slip',
-      		"items" => $itens,
-      		"ignore_due_email" => false,
-      		"custom_variables" => array(
-      			array(
-      				"name" => "invoice_id",
-      				"value" => $invoiceid
-      			)
-      		),
-      		"payer" => array(
-      			"cpf_cnpj" => $cpf_cnpj,
-      			"name" => $fullname,
-      			"email" => $email,
-      			"address" => array(
-      				"street" => $address1,
-      				"number" => "000",
-      				"city" => $city,
-      				"state" => $state,
-      				"country" => $country,
-      				"zip_code" => $postcode
-      			)
-      		));
-
-    $body = Unirest\Request\Body::json($data);
-
-    $createInvoice = Unirest\Request::post('https://api.iugu.com/v1/invoices', $headers, $body);
+    Iugu::setApiKey( $apiToken );
+  	$createInvoice = Iugu_Invoice::create(Array(
+  		"email" => $email,
+  		"due_date" => $dueDate,
+  		"return_url" => $returnUrl,
+  		"expired_url" => $expired_url,
+  		"notification_url" => $notification_url,
+      "customer_id" => $iuguClientId,
+      "payable_with" => 'bank_slip',
+  		"items" => $itens,
+  		"ignore_due_email" => false,
+  		"custom_variables" => Array(
+  			Array(
+  				"name" => "invoice_id",
+  				"value" => $invoiceid
+  			)
+  		),
+  		"payer" => Array(
+  			"cpf_cnpj" => $cpf_cnpj,
+  			"name" => $fullname,
+  			"email" => $email,
+  			"address" => Array(
+  				"street" => $address1,
+  				"number" => "000",
+  				"city" => $city,
+  				"state" => $state,
+  				"country" => $country,
+  				"zip_code" => $postcode
+  			)
+  		)
+  	));
 
     logModuleCall("Iugu Boleto","Gerar Fatura", $invoiceid, json_decode($createInvoice, true));
     // insere na tabela mod_iugu_invoices os dados de retorno referente a criação da fatura Iugu

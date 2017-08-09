@@ -114,7 +114,7 @@ function iugu_boleto_create_invoice ( $params ){
       $postcode = $params['clientdetails']['postcode'];
       $country = $params['clientdetails']['country'];
       $document = $params['cpf_cnpj_field'];
-      $cpf_cnpj = $params['clientdetails'][$document];
+      $cpf_cnpj = $params['clientdetails'][$document] ? preg_replace('/[^0-9]/', '', $params['clientdetails'][$document]) : '00000000000';
 
     	// Invoice Parameters
     	$invoiceid = $params['invoiceid'];
@@ -185,11 +185,12 @@ function iugu_boleto_create_invoice ( $params ){
 
       return $createInvoice;
 
-      logModuleCall("Iugu Boleto","Boleto Gerado", $invoiceid, json_decode($createInvoice, true));
+      logModuleCall("Iugu Boleto","Boleto Gerado", json_decode($body, true), json_decode($createInvoice->raw_body, true));
 
   }catch (\Exception $e){
-    echo "Problemas ao criar o boleto. {$e->getMessage()}";
-    logModuleCall("Iugu Boleto","Problemas ao Gerar Boleto", $invoiceid, json_decode($createInvoice, true));
+    echo "Problemas ao criar o boleto. {$e->getMessage()} <br>";
+    echo $createInvoice;
+    logModuleCall("Iugu Boleto","Problemas ao Gerar Boleto", json_decode($body, true), json_decode($createInvoice->raw_body, true));
   }
 }
 
@@ -215,12 +216,15 @@ function iugu_boleto_search_invoice( $params ) {
     $headers = array('Accept' => 'application/json');
     $fetchInvoice = Unirest\Request::get("https://api.iugu.com/v1/invoices/$iuguInvoiceId", $headers, $params = null);
     // retorna o ID da fatura
+
+    logModuleCall("Iugu Boleto", "Busca Fatura", $iuguInvoiceId, json_decode($fetchInvoice->raw_body, true));
+
     return $fetchInvoice;
 
   }catch (\Exception $e){
     echo "Problemas em localizar a fatura no banco local. {$e->getMessage()}";
     // loga a ação para debug
-    logModuleCall("Iugu Boleto","Erro ao Buscar Fatura",$invoice,json_decode($iuguInvoiceId, true));
+    logModuleCall("Iugu Boleto","Erro ao Buscar Fatura",$iuguInvoiceId,json_decode($fetchInvoice, true));
   }
 }
 

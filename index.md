@@ -18,7 +18,23 @@ O Módulo para [WHMCS] Iugu Pro desenvolvido pela [EunaRede] proporciona uma int
 
 Este módulo consiste em dois métodos de pagamento diferentes, boleto bancário e cartão de crédito, confira os recursos a seguir:
 
-## Módulo Cartão de Crédito
+## Módulo Boleto Bancário
+
+![Boleto Bancário](docs/img/frontend-bank_slip.png)
+
+Através do método de pagamento por boleto bancário do Módulo [WHMCS] Iugu Pro, é possível gerar o boleto diretamente no WHMCS, sem necessidade de redirecionamento.
+
+### Com este módulo você poderá:
+
+- [x] Gerar o boleto sem redirecionar o cliente para o site da Iugu;
+- [x] Dar baixa na fatura automaticamente após a compensação (retorno automático);
+- [x] Cancelar fatura na Iugu assim que cancelada no WHMCS;
+- [x] Gerar segunda via de boleto caso fatura esteja vencida automaticamente;
+- [x] Inserir multa na segunda via do boleto automaticamente;
+- [ ] ~~Cadastrar o cliente do [WHMCS] na Iugu automaticamente~~;
+- [ ] ~~Excluir o cliente na Iugu quando excluido no [WHMCS]~~;
+
+## Módulo Cartão de Crédito (experimental)
 
 ![Tela do cartão de crédito](docs/img/frontend-credit-card.png)
 
@@ -34,25 +50,12 @@ Através do token de pagamento, o [WHMCS] poderá realizar capturas automáticas
 
 ### Com este módulo você poderá:
 
-* Realizar a cobrança da fatura sem redirecionar o cliente para o site da Iugu;
-* Capturar os cartão de crédito de forma transparente;
-* Capturar faturas recorrentes automaticamente;
-* Cadastrar o cliente do [WHMCS] na Iugu automaticamente;
-* Excluir o cliente na Iugu quando excluido no [WHMCS];
-* Atualizar os dados do cartão do cliente diretamente no [WHMCS];
-
-## Módulo Boleto Bancário
-
-![Boleto Bancário](docs/img/frontend-bank_slip.png)
-
-Através do método de pagamento por boleto bancário do Módulo [WHMCS] Iugu Pro, é possível gerar o boleto diretamente no WHMCS, sem necessidade de redirecionamento.
-
-### Com este módulo você poderá:
-
-* Gerar o boleto sem redirecionar o cliente para o site da Iugu;
-* Dar baixa na fatura automaticamente após a compensação (retorno automático);
-* Cadastrar o cliente do [WHMCS] na Iugu automaticamente;
-* Excluir o cliente na Iugu quando excluido no [WHMCS];
+- [ ] ~~Realizar a cobrança da fatura sem redirecionar o cliente para o site da Iugu~~;
+- [ ] ~~Capturar os cartão de crédito de forma transparente~~;
+- [ ] ~~Capturar faturas recorrentes automaticamente~~;
+- [x] Cadastrar o cliente do [WHMCS] na Iugu automaticamente;
+- [ ] ~~Excluir o cliente na Iugu quando excluido no [WHMCS]~~;
+- [x] Atualizar os dados do cartão do cliente diretamente no [WHMCS];
 
 ## Atualização do Cartão de Crédito
 

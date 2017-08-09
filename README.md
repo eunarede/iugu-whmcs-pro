@@ -18,29 +18,6 @@ O Módulo para [WHMCS] Iugu Pro desenvolvido pela [EunaRede] proporciona uma int
 
 Este módulo consiste em dois métodos de pagamento diferentes, boleto bancário e cartão de crédito, confira os recursos a seguir:
 
-## Módulo Cartão de Crédito
-
-![Tela do cartão de crédito](docs/img/frontend-credit-card.png)
-
-Assita um video demonstrando as funcionalidades do módulo cartão de crédito em [https://youtu.be/00dDINuXT1g](https://youtu.be/00dDINuXT1g)
-
-Através do método de pagamento por cartão de crédito do Módulo [WHMCS] Iugu Pro, é possível realizar o recebimento de faturas via cartão de crédito diretamente no [WHMCS], sem necessidade de redirecionamento. O módulo utiliza os campos originais de cartão de crédito do [WHMCS] sem necessidade de modificação no tema.
-
-Ao realizar um pedido ou na atualização do cartão de crédito no perfil de um cliente já existente, o módulo captura os dados do cartão e utilizando a API da Iugu, gera um código único criptogrado: o token de pagamento.
-
-Os dados do cartão de crédito são criptografados e armazenados nos servidores da Iugu, gerando um token de representação destes dados, que são atrelados ao cliente dentro do sistema da Iugu. Este token então é armazenado no [WHMCS] e vinculado a conta do cliente no [WHMCS].
-
-Através do token de pagamento, o [WHMCS] poderá realizar capturas automáticas de pedidos e cobranças recorrentes de faturas no cartão de crédito. O [WHMCS] armazena apenas a data de vencimento do cartão, os 4 últimos digitos e bandeira (estas informações são utilizadas para alertas de vencimento do cartão).
-
-### Com este módulo você poderá:
-
-* Realizar a cobrança da fatura sem redirecionar o cliente para o site da Iugu;
-* Capturar os cartão de crédito de forma transparente;
-* Capturar faturas recorrentes automaticamente;
-* Cadastrar o cliente do [WHMCS] na Iugu automaticamente;
-* Excluir o cliente na Iugu quando excluido no [WHMCS];
-* Atualizar os dados do cartão do cliente diretamente no [WHMCS];
-
 ## Módulo Boleto Bancário
 
 ![Boleto Bancário](docs/img/frontend-bank_slip.png)
@@ -56,6 +33,29 @@ Através do método de pagamento por boleto bancário do Módulo [WHMCS] Iugu Pr
 - [x] Inserir multa na segunda via do boleto automaticamente;
 - [ ] Cadastrar o cliente do [WHMCS] na Iugu automaticamente;
 - [ ] Excluir o cliente na Iugu quando excluido no [WHMCS];
+
+## Módulo Cartão de Crédito (experimental)
+
+![Tela do cartão de crédito](docs/img/frontend-credit-card.png)
+
+Assita um video demonstrando as funcionalidades do módulo cartão de crédito em [https://youtu.be/00dDINuXT1g](https://youtu.be/00dDINuXT1g)
+
+Através do método de pagamento por cartão de crédito do Módulo [WHMCS] Iugu Pro, é possível realizar o recebimento de faturas via cartão de crédito diretamente no [WHMCS], sem necessidade de redirecionamento. O módulo utiliza os campos originais de cartão de crédito do [WHMCS] sem necessidade de modificação no tema.
+
+Ao realizar um pedido ou na atualização do cartão de crédito no perfil de um cliente já existente, o módulo captura os dados do cartão e utilizando a API da Iugu, gera um código único criptogrado: o token de pagamento.
+
+Os dados do cartão de crédito são criptografados e armazenados nos servidores da Iugu, gerando um token de representação destes dados, que são atrelados ao cliente dentro do sistema da Iugu. Este token então é armazenado no [WHMCS] e vinculado a conta do cliente no [WHMCS].
+
+Através do token de pagamento, o [WHMCS] poderá realizar capturas automáticas de pedidos e cobranças recorrentes de faturas no cartão de crédito. O [WHMCS] armazena apenas a data de vencimento do cartão, os 4 últimos digitos e bandeira (estas informações são utilizadas para alertas de vencimento do cartão).
+
+### Com este módulo você poderá:
+
+- [ ] Realizar a cobrança da fatura sem redirecionar o cliente para o site da Iugu;
+- [ ] Capturar os cartão de crédito de forma transparente;
+- [ ] Capturar faturas recorrentes automaticamente;
+- [x] Cadastrar o cliente do [WHMCS] na Iugu automaticamente;
+- [ ] Excluir o cliente na Iugu quando excluido no [WHMCS];
+- [x] Atualizar os dados do cartão do cliente diretamente no [WHMCS];
 
 ## Atualização do Cartão de Crédito
 

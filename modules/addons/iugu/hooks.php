@@ -74,8 +74,6 @@ require_once("src/Unirest.php");
 
 									if (!is_null($iuguinvoiceid)){
 										Unirest\Request::auth("$apitoken", '');
-										$body = Unirest\Request\Body::json($data);
-										$headers = array('Content-Type' => 'application/json');
 										$result = Unirest\Request::put("https://api.iugu.com/v1/invoices/$iuguinvoiceid/cancel");
 									}
 

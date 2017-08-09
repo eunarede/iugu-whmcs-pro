@@ -199,15 +199,19 @@ function iugu_boleto_create_invoice ( $params ){
  * @return array          Dados do Boleto
  */
 function iugu_boleto_search_invoice( $params ) {
+
+  $apiToken  = $params['api_token'];
+  $invoiceid = $params['invoiceid'];
+
   try{
 
     // procura no banco
     $iuguInvoiceId = Capsule::table('mod_iugu_invoices')
-                    ->where('invoice_id', $params['invoiceid'])
+                    ->where('invoice_id', $invoiceid)
                     ->value('iugu_id');
 
     // basic auth
-    Unirest\Request::auth('2bb622b7549a83c83c3839706f58346a', '');
+    Unirest\Request::auth("$apiToken", '');
     $headers = array('Accept' => 'application/json');
     $fetchInvoice = Unirest\Request::get("https://api.iugu.com/v1/invoices/$iuguInvoiceId", $headers, $params = null);
     // retorna o ID da fatura
@@ -281,7 +285,7 @@ function iugu_boleto_link( $params ){
   }
   // se retornar a data de vencimento menor que o dia de hoje, gera segunda via do boleto
   if ($invoiceparams->body->status != 'expired' && date("Y-m-d", strtotime($invoiceparams->body->due_date)) < date("Y-m-d")){
-    echo "oi";
+
     $invoiceparams = iugu_boleto_duplicate_invoice( $params );
     $htmlOutput = '<a class="btn btn-success btn-lg" target="_blank" role="button" download href="'.$invoiceparams->body->secure_url.'.pdf">'.$langPayNow.'</a>
                   <p>Linha Digitável: <br><small>'.$invoiceparams->body->bank_slip->digitable_line.'</small></p>

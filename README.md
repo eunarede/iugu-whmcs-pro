@@ -49,10 +49,13 @@ Através do método de pagamento por boleto bancário do Módulo [WHMCS] Iugu Pr
 
 ### Com este módulo você poderá:
 
-* Gerar o boleto sem redirecionar o cliente para o site da Iugu;
-* Dar baixa na fatura automaticamente após a compensação (retorno automático);
-* Cadastrar o cliente do [WHMCS] na Iugu automaticamente;
-* Excluir o cliente na Iugu quando excluido no [WHMCS];
+- [x] Gerar o boleto sem redirecionar o cliente para o site da Iugu;
+- [x] Dar baixa na fatura automaticamente após a compensação (retorno automático);
+- [x] Cancelar fatura na Iugu assim que cancelada no WHMCS;
+- [x] Gerar segunda via de boleto caso fatura esteja vencida automaticamente;
+- [x] Inserir multa na segunda via do boleto automaticamente;
+- [ ] Cadastrar o cliente do [WHMCS] na Iugu automaticamente;
+- [ ] Excluir o cliente na Iugu quando excluido no [WHMCS];
 
 ## Atualização do Cartão de Crédito
 

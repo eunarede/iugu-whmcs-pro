@@ -2,7 +2,7 @@
 	"variables": [],
 	"info": {
 		"name": "Iugu",
-		"_postman_id": "60846ec2-d961-7fe7-479e-66a03401c0aa",
+		"_postman_id": "82602b10-54f0-8d3c-60e6-81d32cd7e153",
 		"description": "",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
 	},
@@ -12,111 +12,89 @@
 			"request": {
 				"url": "https://api.iugu.com/v1/charge",
 				"method": "POST",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Basic MjUwZmRlNTYwZjUyNjI2ODA0MzU2YmZlZTIyM2NjYmQ6",
-						"description": ""
-					}
-				],
+				"header": [],
 				"body": {
 					"mode": "formdata",
 					"formdata": [
 						{
 							"key": "customer_id",
 							"value": "2E02CA0848F84EE8A4AD090CA9A454D8",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "customer_payment_method_id",
 							"value": "E9E7900CE90C474DA4ED46788E2A538F",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "items[][description]",
 							"value": "Item",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "items[][quantity]",
 							"value": "1",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "items[][price_cents]",
 							"value": "100",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "payer[cpf_cnpj]",
 							"value": "8888888888",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "payer[name]",
 							"value": "Test Buyer",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "payer[phone_prefix]",
 							"value": "41",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "payer[phone]",
 							"value": "99999999",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "payer[email]",
 							"value": "tabacodenega@gmail.com",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "payer[address][street]",
 							"value": "Av Monteiro Tourinho",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "payer[address][number]",
 							"value": "261",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "payer[address][city]",
 							"value": "Curitiba",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "payer[address][state]",
 							"value": "PR",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "payer[address][country]",
 							"value": "Brazil",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "payer[address][zip_code]",
 							"value": "82000000",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						}
 					]
 				},
@@ -129,93 +107,74 @@
 			"request": {
 				"url": "https://api.iugu.com/v1/charge",
 				"method": "POST",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Basic MjUwZmRlNTYwZjUyNjI2ODA0MzU2YmZlZTIyM2NjYmQ6",
-						"description": ""
-					}
-				],
+				"header": [],
 				"body": {
 					"mode": "formdata",
 					"formdata": [
 						{
 							"key": "method",
 							"value": "bank_slip",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "invoice_id",
 							"value": "0F57DE0AFC6D4BAEAFDE140AFA07F98A",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "payer[cpf_cnpj]",
 							"value": "8888888888",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "payer[name]",
 							"value": "Test Buyer",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "payer[phone_prefix]",
 							"value": "41",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "payer[phone]",
 							"value": "99999999",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "payer[email]",
 							"value": "tabacodenega@gmail.com",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "payer[address][street]",
 							"value": "Av Monteiro Tourinho",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "payer[address][number]",
 							"value": "261",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "payer[address][city]",
 							"value": "Curitiba",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "payer[address][state]",
 							"value": "PR",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "payer[address][country]",
 							"value": "Brazil",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "payer[address][zip_code]",
 							"value": "82000000",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						}
 					]
 				},
@@ -228,117 +187,94 @@
 			"request": {
 				"url": "https://api.iugu.com/v1/charge",
 				"method": "POST",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Basic MjUwZmRlNTYwZjUyNjI2ODA0MzU2YmZlZTIyM2NjYmQ6",
-						"description": ""
-					}
-				],
+				"header": [],
 				"body": {
 					"mode": "formdata",
 					"formdata": [
 						{
 							"key": "token",
 							"value": "1B94808ED3C644EDAC1C38D3C8ED9AFD",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "items[][description]",
 							"value": "Item",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "items[][quantity]",
 							"value": "23",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "items[][price_cents]",
 							"value": "199",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "payer[cpf_cnpj]",
 							"value": "8888888888",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "payer[name]",
 							"value": "Test Buyer",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "payer[phone_prefix]",
 							"value": "41",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "payer[phone]",
 							"value": "99999999",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "payer[email]",
 							"value": "tabacodenega@gmail.com",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "payer[address][street]",
 							"value": "Av Monteiro Tourinho",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "payer[address][number]",
 							"value": "261",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "payer[address][city]",
 							"value": "Curitiba",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "payer[address][state]",
 							"value": "PR",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "payer[address][country]",
 							"value": "Brazil",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "payer[address][zip_code]",
 							"value": "82000000",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "custom_variables[][name]",
 							"value": "invoice_id",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "custom_variables[][value]",
 							"value": "666",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						}
 					]
 				},
@@ -351,17 +287,8 @@
 			"request": {
 				"url": "https://api.iugu.com/v1/invoices/F3315630F71F47B0AF264D73E9786F39",
 				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Basic MjUwZmRlNTYwZjUyNjI2ODA0MzU2YmZlZTIyM2NjYmQ6",
-						"description": ""
-					}
-				],
-				"body": {
-					"mode": "formdata",
-					"formdata": []
-				},
+				"header": [],
+				"body": {},
 				"description": ""
 			},
 			"response": []
@@ -378,56 +305,47 @@
 						{
 							"key": "test",
 							"value": "true",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "method",
 							"value": "credit_card",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "account_id",
-							"value": "9953AA0CEF4F4CBCA63B4568056ED9AB",
-							"type": "text",
-							"enabled": true
+							"value": "",
+							"type": "text"
 						},
 						{
 							"key": "data[number]",
 							"value": "4111111111111111",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "data[verification_value]",
 							"value": "123",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "data[first_name]",
 							"value": "Andre",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "data[last_name]",
 							"value": "Luiz",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "data[month]",
 							"value": "12",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						},
 						{
 							"key": "data[year]",
 							"value": "2013",
-							"type": "text",
-							"enabled": true
+							"type": "text"
 						}
 					]
 				},
@@ -440,10 +358,45 @@
 			"request": {
 				"url": "https://api.iugu.com/v1/customers",
 				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "email",
+							"value": "test@test0client.com",
+							"type": "text"
+						},
+						{
+							"key": "name",
+							"value": "Andre",
+							"type": "text"
+						},
+						{
+							"key": "custom_variables[][name]",
+							"value": "userid",
+							"type": "text"
+						},
+						{
+							"key": "custom_variables[][value]",
+							"value": "123",
+							"type": "text"
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Create Invoice",
+			"request": {
+				"url": "https://api.iugu.com/v1/invoices",
+				"method": "POST",
 				"header": [
 					{
-						"key": "Authorization",
-						"value": "Basic MjUwZmRlNTYwZjUyNjI2ODA0MzU2YmZlZTIyM2NjYmQ6",
+						"key": "Content-Type",
+						"value": "application/json",
 						"description": ""
 					}
 				],
@@ -452,27 +405,134 @@
 					"formdata": [
 						{
 							"key": "email",
-							"value": "test@test0client.com",
-							"type": "text",
-							"enabled": true
+							"value": "iugu@iugu.com",
+							"description": "",
+							"type": "text"
 						},
 						{
-							"key": "name",
-							"value": "Andre",
-							"type": "text",
-							"enabled": true
+							"key": "due_date",
+							"value": "20170820",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "items[][description]",
+							"value": "rert",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "items[][quantity]",
+							"value": "1",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "items[][price_cents]",
+							"value": "999",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "items[][description]",
+							"value": "rert",
+							"description": ""
+						},
+						{
+							"key": "items[][quantity]",
+							"value": "3",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "items[][price_cents]",
+							"value": "899",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "return_url",
+							"value": "https://dev.iugu.com/v1.0/reference",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "expired_url",
+							"value": "https://dev.iugu.com/v1.0/reference",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "notification_url",
+							"value": "https://dev.iugu.com/v1.0/reference",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "fines",
+							"value": "true",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "per_day_interest",
+							"value": "true",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "ignore_due_email",
+							"value": "false",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "payable_with",
+							"value": "bank_slip",
+							"description": "",
+							"type": "text"
 						},
 						{
 							"key": "custom_variables[][name]",
-							"value": "userid",
-							"type": "text",
-							"enabled": true
+							"value": "invoice_id",
+							"description": "",
+							"type": "text"
 						},
 						{
 							"key": "custom_variables[][value]",
-							"value": "123",
-							"type": "text",
-							"enabled": true
+							"value": "852",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "payer[cpf_cnpj]",
+							"value": "01036712931",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "payer[name]",
+							"value": "Andre Luiz",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "payer[email]",
+							"value": "iugu@iugu.com",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "payer[address][zip_code]",
+							"value": "82600000",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "payer[address][number]",
+							"value": "666",
+							"description": "",
+							"type": "text"
 						}
 					]
 				},

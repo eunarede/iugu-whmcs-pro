@@ -4,6 +4,7 @@
 + removida a geração de clientes da Iugu.
 + Removida a biblioteca Iugu PHP.
 + Implementada a comunicação com a API através da biblioteca [Unirest PHP](https://github.com/Mashape/unirest-php).
++ +implementado gatilho para cancelamento da fatura Iugu caso a fatura vinculada no WHMCS for cancelada.
 # 1.5.9
 + [fix] Inserido o parametro _number_ para cadastramento do cliente na Iugu para constante '000'. API Iugu exige que ao enviar o parametro _zip_code_ seja enviado _number_, WHMCS não possui este parametro, o que ocasionava problemas no cadastramento do cliente como mencionado na issue #14
 # 1.5.8

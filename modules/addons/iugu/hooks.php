@@ -13,10 +13,13 @@ if (!defined( "WHMCS" )) {
 	exit( "This file cannot be accessed directly" );
 }
 use Illuminate\Database\Capsule\Manager as Capsule;
+use Unirest\Request as Request;
+use Unirest\Body as Body;
+// require_once("src/Unirest.php");
 
 # Remove dados do cliente no sistema Iugu quando o mesmo for removido do WHMCS
 
-function hook_delete_iugu_client($vars) {
+function hook_delete_iugu_client( $vars ) {
 
 	require_once("iugu-php/lib/Iugu.php");
 
@@ -52,7 +55,35 @@ function hook_delete_iugu_client($vars) {
 }
 
 }
+
+function hook_cancel_invoice_iugu( $vars ) {
+
+// use Unirest\Request as Request;
+// use Unirest\Body as Body;
+require_once("src/Unirest.php");
+
+
+	$apitoken = Capsule::table('tbladdonmodules')->where([
+		['module', '=', 'iugu'],
+		['setting', '=', 'iugu_api_token'],
+	])->value('value');
+
+	$iuguinvoiceid = Capsule::table('mod_iugu_invoices')
+									->where('invoice_id', $vars['invoiceid'])
+									->value('iugu_id');
+
+									if (!is_null($iuguinvoiceid)){
+										Unirest\Request::auth("$apitoken", '');
+										$body = Unirest\Request\Body::json($data);
+										$headers = array('Content-Type' => 'application/json');
+										$result = Unirest\Request::put("https://api.iugu.com/v1/invoices/$iuguinvoiceid/cancel");
+									}
+
+
+
+
+}
 //add_hook('PreDeleteClient', 1, 'hook_delete_iugu_client');
 // add_hook('ClientAdd', 1, 'hook_create_client');
-
+add_hook('InvoiceCancelled', 1, 'hook_cancel_invoice_iugu');
  ?>

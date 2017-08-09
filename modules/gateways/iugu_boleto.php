@@ -114,7 +114,7 @@ function iugu_boleto_create_invoice ( $params ){
       $postcode = $params['clientdetails']['postcode'];
       $country = $params['clientdetails']['country'];
       $document = $params['cpf_cnpj_field'];
-      $cpf_cnpj = preg_replace('/[^0-9]/', '', $params['clientdetails'][$document]);
+      $cpf_cnpj = $params['clientdetails'][$document];
 
     	// Invoice Parameters
     	$invoiceid = $params['invoiceid'];
@@ -141,7 +141,7 @@ function iugu_boleto_create_invoice ( $params ){
 
       $data = array(
             'email' => $email,
-        		'due_date' => preg_replace('/[^0-9]/', '', $dueDate->duedate),
+        		'due_date' =>  $dueDate->duedate,
         		'return_url' => $returnUrl,
         		'expired_url' => $expired_url,
         		"notification_url" => $notification_url,
@@ -262,8 +262,10 @@ function iugu_boleto_link( $params ){
   // busca informações da fatura no banco local para comparação e verificação
   $invoiceparams = iugu_boleto_search_invoice( $params );
 
+  // print_r($invoiceparams->body->status);
+
   // se não retornar uma fatura com o ID procurado, presume-se que é nova. Então cadastra.
-  if( is_null($invoiceparams) ){
+  if( is_null($invoiceparams->body->status) ){
     $invoiceparams = iugu_boleto_create_invoice( $params );
     $htmlOutput = '<a class="btn btn-success btn-lg" target="_blank" role="button" download href="'.$invoiceparams->body->secure_url.'.pdf">'.$langPayNow.'</a>
                   <p>Linha Digitável: <br><small>'.$invoiceparams->body->bank_slip->digitable_line.'</small></p>
@@ -279,6 +281,7 @@ function iugu_boleto_link( $params ){
   }
   // se retornar a data de vencimento menor que o dia de hoje, gera segunda via do boleto
   if ($invoiceparams->body->status != 'expired' && date("Y-m-d", strtotime($invoiceparams->body->due_date)) < date("Y-m-d")){
+    echo "oi";
     $invoiceparams = iugu_boleto_duplicate_invoice( $params );
     $htmlOutput = '<a class="btn btn-success btn-lg" target="_blank" role="button" download href="'.$invoiceparams->body->secure_url.'.pdf">'.$langPayNow.'</a>
                   <p>Linha Digitável: <br><small>'.$invoiceparams->body->bank_slip->digitable_line.'</small></p>

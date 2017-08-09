@@ -1,3 +1,7 @@
+# 1.6.2
++ Tratamento de retorno da API Iugu para geração de de dados para o "System Module Debug Log" do WHMCS, facilitando a identificação de problemas.
+# 1.6.1
++ tratativa de erros.
 # 1.6.0
 + implementada a geração de segunda via da fatura caso a atual esteja vencida.
 + implementada mensagem de erro quando fatura expirada;

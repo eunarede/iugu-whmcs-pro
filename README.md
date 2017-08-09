@@ -31,8 +31,8 @@ Através do método de pagamento por boleto bancário do Módulo [WHMCS] Iugu Pr
 - [x] Cancelar fatura na Iugu assim que cancelada no WHMCS;
 - [x] Gerar segunda via de boleto caso fatura esteja vencida automaticamente;
 - [x] Inserir multa na segunda via do boleto automaticamente;
-- [ ] Cadastrar o cliente do [WHMCS] na Iugu automaticamente;
-- [ ] Excluir o cliente na Iugu quando excluido no [WHMCS];
+- [ ] ~~Cadastrar o cliente do [WHMCS] na Iugu automaticamente~~;
+- [ ] ~~Excluir o cliente na Iugu quando excluido no [WHMCS]~~;
 
 ## Módulo Cartão de Crédito (experimental)
 
@@ -50,11 +50,11 @@ Através do token de pagamento, o [WHMCS] poderá realizar capturas automáticas
 
 ### Com este módulo você poderá:
 
-- [ ] Realizar a cobrança da fatura sem redirecionar o cliente para o site da Iugu;
-- [ ] Capturar os cartão de crédito de forma transparente;
-- [ ] Capturar faturas recorrentes automaticamente;
+- [ ] ~~Realizar a cobrança da fatura sem redirecionar o cliente para o site da Iugu~~;
+- [ ] ~~Capturar os cartão de crédito de forma transparente~~;
+- [ ] ~~Capturar faturas recorrentes automaticamente~~;
 - [x] Cadastrar o cliente do [WHMCS] na Iugu automaticamente;
-- [ ] Excluir o cliente na Iugu quando excluido no [WHMCS];
+- [ ] ~~Excluir o cliente na Iugu quando excluido no [WHMCS]~~;
 - [x] Atualizar os dados do cartão do cliente diretamente no [WHMCS];
 
 ## Atualização do Cartão de Crédito

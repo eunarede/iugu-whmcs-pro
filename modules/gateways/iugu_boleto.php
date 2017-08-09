@@ -106,6 +106,7 @@ function iugu_boleto_create_invoice ( $params ){
     // Client Parameters
       $userid = $params['clientdetails']['userid'];
       $fullname = $params['clientdetails']['fullname'];
+      $companyname = $params['clientdetails']['companyname'];
       $email = $params['clientdetails']['email'];
       $address1 = $params['clientdetails']['address1'];
       $address2 = $params['clientdetails']['address2'];
@@ -115,6 +116,16 @@ function iugu_boleto_create_invoice ( $params ){
       $country = $params['clientdetails']['country'];
       $document = $params['cpf_cnpj_field'];
       $cpf_cnpj = $params['clientdetails'][$document] ? preg_replace('/[^0-9]/', '', $params['clientdetails'][$document]) : '00000000000';
+
+      /**
+       * caso o cliente possua um nome de empresa cadastrada, utiliza esse valor para ser o nome do pagador
+       * @var string
+       */
+      if($companyname) {
+        $payername = $companyname;
+      } else {
+        $payername = $fullname;
+      }
 
     	// Invoice Parameters
     	$invoiceid = $params['invoiceid'];
@@ -158,7 +169,7 @@ function iugu_boleto_create_invoice ( $params ){
             ),
         		"payer" => array(
         			'cpf_cnpj' => $cpf_cnpj,
-        			'name' => $fullname,
+        			'name' => $payername,
         			'email' => $email,
         			'address' => array(
         				'street' => $address1,
@@ -224,37 +235,42 @@ function iugu_boleto_search_invoice( $params ) {
   }catch (\Exception $e){
     echo "Problemas em localizar a fatura no banco local. {$e->getMessage()}";
     // loga a ação para debug
-    logModuleCall("Iugu Boleto","Erro ao Buscar Fatura",$iuguInvoiceId,json_decode($fetchInvoice, true));
+    logModuleCall("Iugu Boleto","Erro ao Buscar Fatura",$iuguInvoiceId,json_decode($fetchInvoice->raw_body, true));
   }
 }
 
 function iugu_boleto_duplicate_invoice ( $params ) {
+  try{
 
-  $apiToken  = $params['api_token'];
-  $invoiceid = $params['invoiceid'];
-  $today     = date("Ymd");
+    $apiToken  = $params['api_token'];
+    $invoiceid = $params['invoiceid'];
+    $today     = date("Ymd");
 
-  $iuguInvoiceId = Capsule::table('mod_iugu_invoices')
-                            ->where('invoice_id', $invoiceid)
-                            ->value('iugu_id');
+    $iuguInvoiceId = Capsule::table('mod_iugu_invoices')
+                              ->where('invoice_id', $invoiceid)
+                              ->value('iugu_id');
 
 
-  // Autenticacao
-  Unirest\Request::auth("$apiToken", '');
-  $headers = array('Content-Type' => 'application/json');
-  $data    = array(
-    'due_date'             => $today,
-    'current_fines_option' => true,
-  );
-  $body          = Unirest\Request\Body::json($data);
-  $response      = Unirest\Request::post("https://api.iugu.com/v1/invoices/$iuguInvoiceId/duplicate", $headers, $body);
-  $iuguInvoiceId = $response->body->id;
-  Capsule::table('mod_iugu_invoices')
-          ->where('invoice_id', $invoiceid)
-          ->update(array('iugu_id' => $iuguInvoiceId));
+    // Autenticacao
+    Unirest\Request::auth("$apiToken", '');
+    $headers = array('Content-Type' => 'application/json');
+    $data    = array(
+      'due_date'             => $today,
+      'current_fines_option' => true,
+    );
+    $body          = Unirest\Request\Body::json($data);
+    $response      = Unirest\Request::post("https://api.iugu.com/v1/invoices/$iuguInvoiceId/duplicate", $headers, $body);
+    $iuguInvoiceId = $response->body->id;
+    Capsule::table('mod_iugu_invoices')
+            ->where('invoice_id', $invoiceid)
+            ->update(array('iugu_id' => $iuguInvoiceId));
 
-  return $response;
+    return $response;
 
+  }catch (\Exception $e){
+    echo "Problemas em localizar a fatura no banco local. {$e->getMessage()}";
+    logModuleCall("Iugu Boleto", "Erro ao gerar segunda via", $iuguInvoiceId, json_decode($response->raw_body, true));
+  }
 }
 /**
  * Gera o link do boleto e exibe o botão na fatura

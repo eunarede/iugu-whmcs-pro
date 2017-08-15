@@ -539,6 +539,45 @@
 				"description": ""
 			},
 			"response": []
+		},
+		{
+			"name": "Segunda Via Fatura",
+			"request": {
+				"url": "https://api.iugu.com/v1/invoices/EBF263D402684DCDBE5FD3054BFD7B4A/duplicate",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic MmJiNjIyYjc1NDlhODNjODNjMzgzOTcwNmY1ODM0NmE6",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "due_date",
+							"value": "20170902",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "current_fines_option",
+							"value": "true",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "",
+							"value": "",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
 		}
 	]
 }

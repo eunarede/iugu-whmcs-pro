@@ -131,7 +131,7 @@ function iugu_boleto_create_invoice ( $params ){
     	$invoiceid = $params['invoiceid'];
     	$description = $params["description"];
 
-      $dueDate = Capsule::table('tblinvoices')->select('duedate')->where('id', $invoiceid)->first();
+      $dueDate = Capsule::table('tblinvoices')->select('duedate')->where('id', $invoiceid)->value('duedate');
 
     	/** @var stdClass $itens */
     	$itens = array();
@@ -152,7 +152,7 @@ function iugu_boleto_create_invoice ( $params ){
 
       $data = array(
             'email' => $email,
-        		'due_date' =>  $dueDate->duedate,
+        		'due_date' =>  $dueDate,
         		'return_url' => $returnUrl,
         		'expired_url' => $expired_url,
         		"notification_url" => $notification_url,
@@ -210,17 +210,9 @@ function iugu_boleto_create_invoice ( $params ){
  * @param  array Parametros do WHMCS
  * @return array          Dados do Boleto
  */
-function iugu_boleto_search_invoice( $params ) {
-
-  $apiToken  = $params['api_token'];
-  $invoiceid = $params['invoiceid'];
+function iugu_boleto_search_invoice( $apiToken,  $iuguInvoiceId ) {
 
   try{
-
-    // procura no banco
-    $iuguInvoiceId = Capsule::table('mod_iugu_invoices')
-                    ->where('invoice_id', $invoiceid)
-                    ->value('iugu_id');
 
     // basic auth
     Unirest\Request::auth("$apiToken", '');
@@ -279,17 +271,21 @@ function iugu_boleto_duplicate_invoice ( $params ) {
  */
 function iugu_boleto_link( $params ){
 
+  $apiToken  = $params['api_token'];
   $langPayNow = "Baixar Boleto";
   $invoiceid = $params['invoiceid'];
   $duedate = Capsule::table('tblinvoices')->select('duedate')->where('id', $invoiceid)->first();
 
-  // busca informações da fatura no banco local para comparação e verificação
-  $invoiceparams = iugu_boleto_search_invoice( $params );
+  // procura no banco
+  $iuguInvoiceId = Capsule::table('mod_iugu_invoices')->where('invoice_id', $invoiceid)->value('iugu_id');
 
-  // print_r($invoiceparams->body->status);
+  if ($iuguInvoiceId){
+    // busca informações da fatura no banco local para comparação e verificação
+    $invoiceparams = iugu_boleto_search_invoice( $apiToken,  $iuguInvoiceId );
+  }
 
   // se não retornar uma fatura com o ID procurado, presume-se que é nova. Então cadastra.
-  if( is_null($invoiceparams->body->status) ){
+  if( is_null($iuguInvoiceId) ){
     $invoiceparams = iugu_boleto_create_invoice( $params );
     $htmlOutput = '<a class="btn btn-success btn-lg" target="_blank" role="button" download href="'.$invoiceparams->body->secure_url.'.pdf">'.$langPayNow.'</a>
                   <p>Linha Digitável: <br><small>'.$invoiceparams->body->bank_slip->digitable_line.'</small></p>
@@ -297,12 +293,15 @@ function iugu_boleto_link( $params ){
                   ';
     return $htmlOutput;
   }
-  if ($invoiceparams->body->status == 'expired' || $invoiceparams->body->status == 'canceled') {
+
+  // se a fatura estiver cancelada, não exibe o boleto e informa o cliente
+  if ($invoiceparams->body->status == 'canceled') {
     $htmlOutput = "
-                  <p class='bg-danger text-danger'>Esta Fatura está expirada ou cancelada.</p>
+                  <p class='bg-danger text-danger'>Este Boleto está cancelado. Contacte o setor financeiro.</p>
     ";
     return $htmlOutput;
   }
+
   // se retornar a data de vencimento menor que o dia de hoje, gera segunda via do boleto
   if ($invoiceparams->body->status != 'expired' && date("Y-m-d", strtotime($invoiceparams->body->due_date)) < date("Y-m-d")){
 
@@ -321,6 +320,5 @@ function iugu_boleto_link( $params ){
   return $htmlOutput;
 
 } //function
-
 
 ?>

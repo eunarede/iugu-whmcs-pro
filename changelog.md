@@ -1,3 +1,7 @@
+# 1.6.4
++ Correções na busca de faturas
+# 1.6.3
++ Correções no tratamento de erros
 # 1.6.2
 + Tratamento de retorno da API Iugu para geração de de dados para o "System Module Debug Log" do WHMCS, facilitando a identificação de problemas.
 # 1.6.1

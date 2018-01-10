@@ -7,3 +7,11 @@ O Módulo WHMCS Iugu Cartão PRO é um módulo de pagamento para o intermediador
 
 Conheça mais sobre o módulo WHMCS Iugu Cartão PRO em [https://market.eunarede.com/modules/whmcs/iugu-cartao-pro/](https://market.eunarede.com/modules/whmcs/iugu-cartao-pro/)
 Este módulo também está disponível no WHMCS Marketplace em [https://marketplace.whmcs.com/product/4027](https://marketplace.whmcs.com/product/4027)
+
+## WHMCS Iugu Boleto PRO
+
+Módulo em fase de disponibilização pública
+
+## WHMCS Iugu Controle
+
+Módulo em fase de disponibilização pública
